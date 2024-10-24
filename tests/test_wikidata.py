@@ -10,3 +10,14 @@ Test the Wikidata module
 """
 
 from pleiades_sidebar.wikidata import WikidataDataset
+import pytest
+
+# test_wikidata.py
+
+
+def test_wikidata_dataset_initialization():
+    # Create an instance of WikidataDataset
+    wikidata_dataset = WikidataDataset()
+
+    # Check if the instance is created successfully
+    assert isinstance(wikidata_dataset, WikidataDataset)

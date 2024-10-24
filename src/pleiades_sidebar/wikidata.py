@@ -12,4 +12,5 @@ from pleiades_sidebar.dataset import Dataset
 
 
 class WikidataDataset(Dataset):
-    pass
+    def __init__(self):
+        Dataset.__init__(self)
