@@ -6,9 +6,10 @@
 #
 
 """
-Python 3 package template (changeme)
+Define a class for managing data from Wikidata
 """
+from pleiades_sidebar.dataset import Dataset
 
-import logging
 
-logger = logging.getLogger(__name__)
+class WikidataDataset(Dataset):
+    pass

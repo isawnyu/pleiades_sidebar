@@ -6,9 +6,7 @@
 #
 
 """
-Python 3 package template (changeme)
+Test the Wikidata module 
 """
 
-import logging
-
-logger = logging.getLogger(__name__)
+from pleiades_sidebar.wikidata import WikidataDataset
