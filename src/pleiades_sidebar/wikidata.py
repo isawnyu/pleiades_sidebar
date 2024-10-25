@@ -8,7 +8,14 @@
 """
 Define a class for managing data from Wikidata
 """
+import logging
+from os import environ
+from pathlib import Path
 from pleiades_sidebar.dataset import Dataset
+
+logger = logging.getLogger("pleiades_sidebar")
+wikidata_path = Path(environ["WIKIDATA_PATH"]).expanduser().resolve()
+logger.debug(f"Wikidata path: {wikidata_path}")
 
 
 class WikidataDataset(Dataset):
