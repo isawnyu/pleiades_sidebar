@@ -73,8 +73,13 @@ class WikidataDataItem(DataItem):
         links = set()
         for fieldname, resource_shortname in LINK_KEYS.items():
             if not resource_shortname:
+                logger.warning(f"Skipping unsupported fieldname '{fieldname}'")
                 continue
-            val = self._raw_data[fieldname]
+            try:
+                val = self._raw_data[fieldname]
+            except KeyError:
+                logger.warning(f"Did not find expected fieldname '{fieldname}'")
+                continue
             vals = [norm(s) for s in rx_delim.split(val)]
             vals = [s for s in vals if s != ""]
             try:

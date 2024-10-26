@@ -9,7 +9,7 @@
 Test the Wikidata module 
 """
 
-from pleiades_sidebar.wikidata import WikidataDataset
+from pleiades_sidebar.wikidata import WikidataDataset, WikidataDataItem
 import pytest
 
 # test_wikidata.py
@@ -21,3 +21,18 @@ def test_wikidata_dataset_initialization():
 
     # Check if the instance is created successfully
     assert isinstance(wikidata_dataset, WikidataDataset)
+
+
+def test_wikidata_dataitem_initialization():
+    d = {
+        "pleiades": "266040",
+        "item": "http://www.wikidata.org/entity/Q5685282",
+        "itemLabel": "Sierra Elvira",
+    }
+    wikidata_dataitem = WikidataDataItem(d)
+    assert isinstance(wikidata_dataitem, WikidataDataItem)
+    assert wikidata_dataitem.label == "Sierra Elvira"
+    assert wikidata_dataitem.pleiades_uris == [
+        "https://pleiades.stoa.org/places/266040"
+    ]
+    assert wikidata_dataitem.uri == "http://www.wikidata.org/entity/Q5685282"
