@@ -14,6 +14,7 @@ from pleiades_sidebar.dataset import Dataset, DataItem
 from pprint import pformat
 import re
 from textnorm import normalize_space, normalize_unicode
+from urllib.parse import urlparse
 
 wikidata_path = Path(environ["WIKIDATA_PATH"]).expanduser().resolve()
 
@@ -74,4 +75,12 @@ class WikidataDataItem(DataItem):
             base_uri = self._get_base_uri(resource_shortname)
             if base_uri:
                 links.update({base_uri + v for v in vals})
-        self.links = list(links)
+        dlinks = dict()
+        for link in links:
+            netloc = urlparse(link).netloc
+            try:
+                dlinks[netloc]
+            except KeyError:
+                dlinks[netloc] = list()
+            dlinks[netloc].append(link)
+        self.links = dlinks

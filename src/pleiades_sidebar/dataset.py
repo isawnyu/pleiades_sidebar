@@ -43,6 +43,10 @@ class DataItem:
         # TBD: make spatial?
         self._parse()
 
+    @property
+    def pleiades_uri(self) -> str:
+        pass
+
     def __repr__(self) -> str:
         d = {
             "label": self.label,
