@@ -44,8 +44,8 @@ class DataItem:
         self._parse()
 
     @property
-    def pleiades_uri(self) -> str:
-        pass
+    def pleiades_uris(self) -> str:
+        return self.links["pleiades.stoa.org"]
 
     def __repr__(self) -> str:
         d = {
@@ -65,9 +65,7 @@ class DataItem:
             logger.error(
                 f"No base URI available for resource shortname '{resource_shortname}'"
             )
-        except TypeError as err:
-            err.msg(f"Nonetype for resource shortname {resource_shortname}")
-            raise err
+            raise ValueError
 
     def _parse(self):
         """Parse/ingest the raw data for this item into label, uri, and summary fields

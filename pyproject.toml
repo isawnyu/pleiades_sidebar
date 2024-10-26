@@ -48,4 +48,4 @@ dependencies = [
 # "Bug Tracker" = "https://github.com/pypa/sampleproject/issues"
 [tool.pytest.ini_options]
 log_cli = true
-log_cli_level = "DEBUG"
+log_cli_level = "INFO"

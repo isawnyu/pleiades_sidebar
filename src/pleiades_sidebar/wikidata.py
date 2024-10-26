@@ -8,6 +8,7 @@
 """
 Define a class for managing data from Wikidata
 """
+import logging
 from os import environ
 from pathlib import Path
 from pleiades_sidebar.dataset import Dataset, DataItem
@@ -57,6 +58,8 @@ class WikidataDataItem(DataItem):
         self._raw_data = raw
 
     def _parse(self):
+        logger = logging.getLogger("WikidataDataItem._parse")
+        """Parse our standard wikipedia SPARQL result CSV into standard internal format"""
         # label
         self.label = norm(self._raw_data["itemLabel"])
 
@@ -69,12 +72,19 @@ class WikidataDataItem(DataItem):
         # links
         links = set()
         for fieldname, resource_shortname in LINK_KEYS.items():
+            if not resource_shortname:
+                continue
             val = self._raw_data[fieldname]
             vals = [norm(s) for s in rx_delim.split(val)]
             vals = [s for s in vals if s != ""]
-            base_uri = self._get_base_uri(resource_shortname)
-            if base_uri:
-                links.update({base_uri + v for v in vals})
+            try:
+                base_uri = self._get_base_uri(resource_shortname)
+            except RuntimeError:
+                logger.error(
+                    f"No base_uri for resource_shortname '{resource_shortname}"
+                )
+                raise
+            links.update({base_uri + v for v in vals})
         dlinks = dict()
         for link in links:
             netloc = urlparse(link).netloc
