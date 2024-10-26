@@ -13,6 +13,23 @@ import logging
 from pathlib import Path
 from pprint import pformat
 
+RESOURCE_URIS = {
+    "cfl/ado": "",
+    "dare": "",
+    "geonames": "",
+    "gettytgn": "",
+    "idaigaz": "",
+    "loc": "",
+    "manto": "",
+    "nomisma": "",
+    "pleiades": "https://pleiades.stoa.org/places/",
+    "topostext": "",
+    "trismegistos": "",
+    "viaf": "",
+    "vici": "",
+    "wikidata": "https://wikidata.org/entities/",
+}
+
 
 class DataItem:
     """An individual data item in a dataset"""
@@ -25,6 +42,28 @@ class DataItem:
         self._raw_data = raw
         # TBD: make spatial?
         self._parse()
+
+    def __repr__(self) -> str:
+        d = {
+            "label": self.label,
+            "uri": self.uri,
+            "summary": self.summary,
+            "links": self.links,
+        }
+        return pformat(d, indent=4)
+
+    def _get_base_uri(self, resource_shortname: str) -> str:
+        """Get base URI for a given resource shortname"""
+        try:
+            return RESOURCE_URIS[resource_shortname]
+        except KeyError:
+            logger = logging.getLogger("_get_base_uri")
+            logger.error(
+                f"No base URI available for resource shortname '{resource_shortname}'"
+            )
+        except TypeError as err:
+            err.msg(f"Nonetype for resource shortname {resource_shortname}")
+            raise err
 
     def _parse(self):
         """Parse/ingest the raw data for this item into label, uri, and summary fields

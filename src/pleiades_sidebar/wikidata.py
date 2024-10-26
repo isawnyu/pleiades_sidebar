@@ -8,16 +8,32 @@
 """
 Define a class for managing data from Wikidata
 """
-import logging
 from os import environ
 from pathlib import Path
 from pleiades_sidebar.dataset import Dataset, DataItem
 from pprint import pformat
+import re
 from textnorm import normalize_space, normalize_unicode
 
-logger = logging.getLogger("pleiades_sidebar")
 wikidata_path = Path(environ["WIKIDATA_PATH"]).expanduser().resolve()
-logger.debug(f"Wikidata path: {wikidata_path}")
+
+LINK_KEYS = {
+    "pleiades": "pleiades",
+    "chronique_ids": "cfl/ado",
+    "dare_ids": "dare",
+    "geonames_ids": "geonames",
+    "gettytgn_ids": "gettytgn",
+    "idaigaz_ids": "idaigaz",
+    "loc_ids": "loc",
+    "manto_ids": "manto",
+    "nomisma_ids": "nomisma",
+    "topostext_ids": "topostext",
+    "trismegistos_ids": "trismegistos",
+    "viaf_ids": "viaf",
+    "vici_ids": "vici",
+    "wikipedia_en": "",
+}
+rx_delim = re.compile(r"(,|;)\s*")
 
 
 def norm(s: str) -> str:
@@ -32,8 +48,6 @@ class WikidataDataset(Dataset):
     def parse_all(self):
         for raw_item in self._raw_data:
             wikidata_item = WikidataDataItem(raw_item)
-            logger.debug(pformat(wikidata_item, indent=4))
-            exit()
 
 
 class WikidataDataItem(DataItem):
@@ -42,9 +56,22 @@ class WikidataDataItem(DataItem):
         self._raw_data = raw
 
     def _parse(self):
-        self.label = norm(self._raw_data["itemLabel"])
-        self.uri = norm(self._raw_data["item"])
         # label
+        self.label = norm(self._raw_data["itemLabel"])
+
         # uri
+        self.uri = norm(self._raw_data["item"])
+
         # summary
+        # TBD
+
         # links
+        links = set()
+        for fieldname, resource_shortname in LINK_KEYS.items():
+            val = self._raw_data[fieldname]
+            vals = [norm(s) for s in rx_delim.split(val)]
+            vals = [s for s in vals if s != ""]
+            base_uri = self._get_base_uri(resource_shortname)
+            if base_uri:
+                links.update({base_uri + v for v in vals})
+        self.links = list(links)
