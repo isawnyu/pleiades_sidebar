@@ -43,6 +43,9 @@ class DataItem:
         # TBD: make spatial?
         self._parse()
 
+    def lpf(self) -> dict:
+        """Get a representation as dictionary compatible with Linked Places Format"""
+
     @property
     def pleiades_uris(self) -> str:
         return self.links["pleiades.stoa.org"]
