@@ -60,8 +60,11 @@ class WikidataDataset(Dataset):
                 try:
                     self._pleiades_index[puri]
                 except KeyError:
-                    self._pleiades_index[puri] = set()
-                self._pleiades_index[puri].add(wikidata_item.uri)
+                    self._pleiades_index[puri] = wikidata_item.uri
+                else:
+                    raise RuntimeError(
+                        f"Pleiades URI collision: {puri} in {wikidata_item.uri} and {self._pleiades_index[puri]}"
+                    )
 
 
 class WikidataDataItem(DataItem):
