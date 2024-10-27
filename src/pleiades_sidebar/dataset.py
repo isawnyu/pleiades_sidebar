@@ -8,6 +8,7 @@
 """
 Define a base class for a dataset manager
 """
+from copy import deepcopy
 from encoded_csv import get_csv
 import logging
 from pathlib import Path
@@ -30,6 +31,19 @@ RESOURCE_URIS = {
     "wikidata": "https://wikidata.org/entities/",
 }
 
+LPF_FEATURE_COLLECTION_TEMPLATE = {
+    "type": "FeatureCollection",
+    "@context": "https://raw.githubusercontent.com/LinkedPasts/linked-places/master/linkedplaces-context-v1.1.jsonld",
+    "features": [],
+}
+
+LPF_FEATURE_TEMPLATE = {
+    "@id": None,
+    "type": "Feature",
+    "properties": {"title": "", "summary": ""},
+    "links": [],
+}
+
 
 class DataItem:
     """An individual data item in a dataset"""
@@ -45,6 +59,17 @@ class DataItem:
 
     def lpf(self) -> dict:
         """Get a representation as dictionary compatible with Linked Places Format"""
+
+    def to_lpf_dict(self):
+        d = deepcopy(LPF_FEATURE_TEMPLATE)
+        d["@id"] = self.uri
+        d["properties"]["title"] = self.label
+        d["properties"]["summary"] = self.summary
+        for domain_links in self.links.values():
+            for link in domain_links:
+                dl = {"type": "closeMatch", "identifier": link}
+                d["links"].append(dl)
+        return d
 
     @property
     def pleiades_uris(self) -> str:

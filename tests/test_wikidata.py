@@ -69,3 +69,17 @@ class TestWikidataDataItem:
     def test_wikidata_dataitem_uri(self):
         """Did we successfully parse and store the Wikidata Entity URI?"""
         assert self.wikidata_dataitem.uri == "http://www.wikidata.org/entity/Q5685282"
+
+    def test_wikidata_dataitem_lpf(self):
+        """Do we get expected LPF dictionary for this Wikidata Entity?"""
+        assert self.wikidata_dataitem.to_lpf_dict() == {
+            "@id": "http://www.wikidata.org/entity/Q5685282",
+            "type": "Feature",
+            "properties": {"title": "Sierra Elvira", "summary": None},
+            "links": [
+                {
+                    "type": "closeMatch",
+                    "identifier": "https://pleiades.stoa.org/places/266040",
+                }
+            ],
+        }
