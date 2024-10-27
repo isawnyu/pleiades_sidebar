@@ -9,18 +9,31 @@
 Test the Wikidata module 
 """
 
+from pathlib import Path
 from pleiades_sidebar.wikidata import WikidataDataset, WikidataDataItem
 import pytest
 
 # test_wikidata.py
 
+TEST_DATA_DIR = Path("tests/data/")
 
-def test_wikidata_dataset_initialization():
-    # Create an instance of WikidataDataset
-    wikidata_dataset = WikidataDataset()
 
-    # Check if the instance is created successfully
-    assert isinstance(wikidata_dataset, WikidataDataset)
+class TestWikidataDataset:
+
+    @classmethod
+    def setup_class(cls):
+        # Create an instance of WikidataDataset
+        cls.wikidata_dataset = WikidataDataset(
+            wikidata_path=TEST_DATA_DIR / "wikidata.csv"
+        )
+
+    def test_wikidata_dataset_initialization(self):
+
+        # Check if the instance is created successfully
+        assert isinstance(self.wikidata_dataset, WikidataDataset)
+
+    def test_wikidata_dataset_load(self):
+        """Did we load the expected number of items"""
 
 
 def test_wikidata_dataitem_initialization():

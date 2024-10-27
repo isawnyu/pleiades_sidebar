@@ -17,7 +17,7 @@ import re
 from textnorm import normalize_space, normalize_unicode
 from urllib.parse import urlparse
 
-wikidata_path = Path(environ["WIKIDATA_PATH"]).expanduser().resolve()
+DEFAULT_WIKIDATA_PATH = Path(environ["WIKIDATA_PATH"]).expanduser().resolve()
 
 LINK_KEYS = {
     "pleiades": "pleiades",
@@ -43,7 +43,7 @@ def norm(s: str) -> str:
 
 
 class WikidataDataset(Dataset):
-    def __init__(self):
+    def __init__(self, wikidata_path: Path = DEFAULT_WIKIDATA_PATH):
         Dataset.__init__(self)
         Dataset.load(self, wikidata_path, "csv")
 
@@ -58,8 +58,9 @@ class WikidataDataItem(DataItem):
         self._raw_data = raw
 
     def _parse(self):
-        logger = logging.getLogger("WikidataDataItem._parse")
         """Parse our standard wikipedia SPARQL result CSV into standard internal format"""
+
+        logger = logging.getLogger("WikidataDataItem._parse")
         # label
         self.label = norm(self._raw_data["itemLabel"])
 
