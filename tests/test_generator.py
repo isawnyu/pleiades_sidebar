@@ -38,5 +38,4 @@ class TestGenerator:
         assert len(g.generate()) == 11
         g = Generator(namespaces=["wikidata"], use_cached=True)
         p = g.generate()
-        pprint(p, indent=4)
         assert len(p) == 11

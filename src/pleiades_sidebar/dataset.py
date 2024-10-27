@@ -104,7 +104,7 @@ class DataItem:
             logger.error(
                 f"No base URI available for resource shortname '{resource_shortname}'"
             )
-            raise ValueError
+            raise NotImplementedError()
 
     def _parse(self):
         """Parse/ingest the raw data for this item into label, uri, and summary fields

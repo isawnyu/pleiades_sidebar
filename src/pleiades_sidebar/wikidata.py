@@ -60,7 +60,12 @@ class WikidataDataset(Dataset):
             except KeyError:
                 self._data[wikidata_item.uri] = wikidata_item
             else:
-                raise RuntimeError(f"Wikidata URI collision: {wikidata_item.uri}")
+                logger.debug(
+                    f"Wikidata URI collision: {wikidata_item.uri}. Merging ..."
+                )
+                self._data[wikidata_item.uri].links["pleiades.stoa.org"].extend(
+                    wikidata_item.links["pleiades.stoa.org"]
+                )
 
 
 class WikidataDataItem(DataItem):
@@ -85,7 +90,7 @@ class WikidataDataItem(DataItem):
         links = set()
         for fieldname, resource_shortname in LINK_KEYS.items():
             if not resource_shortname:
-                logger.warning(f"Skipping unsupported fieldname '{fieldname}'")
+                logger.debug(f"Skipping unsupported fieldname '{fieldname}'")
                 continue
             try:
                 val = self._raw_data[fieldname]
@@ -96,12 +101,10 @@ class WikidataDataItem(DataItem):
             vals = [s for s in vals if s != ""]
             try:
                 base_uri = self._get_base_uri(resource_shortname)
-            except RuntimeError:
-                logger.error(
-                    f"No base_uri for resource_shortname '{resource_shortname}"
-                )
-                raise
-            links.update({base_uri + v for v in vals})
+            except NotImplementedError:
+                continue
+            if base_uri:
+                links.update({base_uri + v for v in vals})
         dlinks = dict()
         for link in links:
             netloc = urlparse(link).netloc
