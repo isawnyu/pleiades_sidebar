@@ -40,6 +40,10 @@ class TestWikidataDataset:
         """Did we index the expected number of Pleiades IDs"""
         assert len(self.wikidata_dataset._pleiades_index) == 11
 
+    def test_wikidata_dataset_lpf(self):
+        """Do we get an LPF feature collection?"""
+        assert len(self.wikidata_dataset.to_lpf_dict()["features"]) == 11
+
 
 class TestWikidataDataItem:
 

@@ -57,9 +57,6 @@ class DataItem:
         # TBD: make spatial?
         self._parse()
 
-    def lpf(self) -> dict:
-        """Get a representation as dictionary compatible with Linked Places Format"""
-
     def to_lpf_dict(self):
         d = deepcopy(LPF_FEATURE_TEMPLATE)
         d["@id"] = self.uri
@@ -74,6 +71,18 @@ class DataItem:
     @property
     def pleiades_uris(self) -> str:
         return self.links["pleiades.stoa.org"]
+
+    def to_lpf_dict(self):
+        """Get LPF formatted dictionary, suitable to save as JSON"""
+        d = deepcopy(LPF_FEATURE_TEMPLATE)
+        d["@id"] = self.uri
+        d["properties"]["title"] = self.label
+        d["properties"]["summary"] = self.summary
+        for domain_links in self.links.values():
+            for link in domain_links:
+                dl = {"type": "closeMatch", "identifier": link}
+                d["links"].append(dl)
+        return d
 
     def __repr__(self) -> str:
         d = {
@@ -139,6 +148,11 @@ class Dataset:
         """Parse the already-loaded dataset"""
         # OVERRIDE THIS METHOD FOR EACH DATASET
         pass
+
+    def to_lpf_dict(self):
+        d = deepcopy(LPF_FEATURE_COLLECTION_TEMPLATE)
+        d["features"] = [item.to_lpf_dict() for item in self._data.values()]
+        return d
 
     def _load_csv(self, datafile_path: Path):
         data = get_csv(str(datafile_path), sample_lines=1000)
