@@ -6,9 +6,24 @@
 #
 
 """
-Python 3 package template (changeme)
+Define a class for generating sidebar data from multiple sources
 """
 
-import logging
+from os import environ
+from pleiades_sidebar.wikidata import WikidataDataset
 
-logger = logging.getLogger(__name__)
+CLASSES_BY_NAMESPACE = {"wikidata": WikidataDataset}
+
+
+class Generator:
+    def __init__(self, namespaces: list, paths: dict = {}, use_cached: bool = False):
+        self.datasets = {}
+        for ns in namespaces:
+            try:
+                path = paths[ns]
+            except KeyError:
+                self.datasets[ns] = CLASSES_BY_NAMESPACE[ns](use_cache=use_cached)
+            else:
+                self.datasets[ns] = CLASSES_BY_NAMESPACE[ns](
+                    path=path, use_cache=use_cached
+                )

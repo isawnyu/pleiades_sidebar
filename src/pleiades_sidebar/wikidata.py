@@ -43,9 +43,13 @@ def norm(s: str) -> str:
 
 
 class WikidataDataset(Dataset):
-    def __init__(self, wikidata_path: Path = DEFAULT_WIKIDATA_PATH):
+    def __init__(self, wikidata_path: Path = DEFAULT_WIKIDATA_PATH, use_cache=False):
         Dataset.__init__(self)
-        Dataset.load(self, wikidata_path, "csv")
+        self.namespace = "wikidata"
+        if use_cache:
+            Dataset.from_cache(self, namespace="wikidata")
+        else:
+            Dataset.load(self, wikidata_path, "csv")
 
     def parse_all(self):
         for raw_item in self._raw_data:

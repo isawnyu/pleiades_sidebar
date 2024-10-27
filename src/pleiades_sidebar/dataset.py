@@ -12,7 +12,9 @@ from copy import deepcopy
 from encoded_csv import get_csv
 import logging
 from pathlib import Path
+from platformdirs import user_cache_dir
 from pprint import pformat
+from pickle import Pickler, Unpickler
 
 RESOURCE_URIS = {
     "cfl/ado": "",
@@ -119,10 +121,18 @@ class Dataset:
     """Base class for a dataset manager"""
 
     def __init__(self):
+        self.namespace = None
         # Parsed DataItems keyed by URI
         self._data = dict()
         # Dictionary of lists of DataItem IDs keyed by Pleiades URIs
         self._pleiades_index = dict()
+
+    def from_cache(self, namespace: str):
+        path = Path(user_cache_dir("pleiades_sidebar", ensure_exists=True))
+        with open(path / f"{self.namespace}.pickle", "rb") as f:
+            unpickler = Unpickler(f)
+            self._data = unpickler.load()
+        del f
 
     def get(self, item_uri: str) -> DataItem:
         """Get a parsed dataitem by its URI"""
@@ -143,11 +153,19 @@ class Dataset:
         cmd = f"_load_{load_method}"
         getattr(self, cmd)(datafile_path)
         self.parse_all()
+        self.to_cache()
 
     def parse_all(self):
         """Parse the already-loaded dataset"""
         # OVERRIDE THIS METHOD FOR EACH DATASET
         pass
+
+    def to_cache(self):
+        path = Path(user_cache_dir("pleiades_sidebar", ensure_exists=True))
+        with open(path / f"{self.namespace}.pickle", "wb") as f:
+            pickler = Pickler(f)
+            pickler.dump(self._data)
+        del f
 
     def to_lpf_dict(self):
         d = deepcopy(LPF_FEATURE_COLLECTION_TEMPLATE)

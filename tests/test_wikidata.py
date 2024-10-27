@@ -44,6 +44,11 @@ class TestWikidataDataset:
         """Do we get an LPF feature collection?"""
         assert len(self.wikidata_dataset.to_lpf_dict()["features"]) == 11
 
+    def test_wikidata_dataset_from_cache(self):
+        """Can we get the data from cache?"""
+        wd = WikidataDataset(use_cache=True)
+        assert len(wd) == 11
+
 
 class TestWikidataDataItem:
 
