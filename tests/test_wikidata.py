@@ -41,16 +41,31 @@ class TestWikidataDataset:
         assert len(self.wikidata_dataset._pleiades_index) == 11
 
 
-def test_wikidata_dataitem_initialization():
-    d = {
-        "pleiades": "266040",
-        "item": "http://www.wikidata.org/entity/Q5685282",
-        "itemLabel": "Sierra Elvira",
-    }
-    wikidata_dataitem = WikidataDataItem(d)
-    assert isinstance(wikidata_dataitem, WikidataDataItem)
-    assert wikidata_dataitem.label == "Sierra Elvira"
-    assert wikidata_dataitem.pleiades_uris == [
-        "https://pleiades.stoa.org/places/266040"
-    ]
-    assert wikidata_dataitem.uri == "http://www.wikidata.org/entity/Q5685282"
+class TestWikidataDataItem:
+
+    @classmethod
+    def setup_class(cls):
+        d = {
+            "pleiades": "266040",
+            "item": "http://www.wikidata.org/entity/Q5685282",
+            "itemLabel": "Sierra Elvira",
+        }
+        cls.wikidata_dataitem = WikidataDataItem(d)
+
+    def test_wikidata_dataitem_initialization(self):
+        """Did we successfully create a Wikidata DataItem?"""
+        assert isinstance(self.wikidata_dataitem, WikidataDataItem)
+
+    def test_wikidata_dataitem_label(self):
+        """Did we successfully parse and store the proper label?"""
+        assert self.wikidata_dataitem.label == "Sierra Elvira"
+
+    def test_wikidata_dataitem_pleiades(self):
+        """Did we successfully parse and store the corresponding Pleiades URI?"""
+        assert self.wikidata_dataitem.pleiades_uris == [
+            "https://pleiades.stoa.org/places/266040"
+        ]
+
+    def test_wikidata_dataitem_uri(self):
+        """Did we successfully parse and store the Wikidata Entity URI?"""
+        assert self.wikidata_dataitem.uri == "http://www.wikidata.org/entity/Q5685282"
