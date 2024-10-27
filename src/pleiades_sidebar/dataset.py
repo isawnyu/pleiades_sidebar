@@ -85,7 +85,8 @@ class Dataset:
     """Base class for a dataset manager"""
 
     def __init__(self):
-        self._data = dict()  # Parsed DataItems keyed by URI
+        # Parsed DataItems keyed by URI
+        self._data = dict()
         # Dictionary of lists of DataItem IDs keyed by Pleiades URIs
         self._pleiades_index = dict()
 
@@ -121,3 +122,6 @@ class Dataset:
             f"Loaded {len(data['content'])} rows of data with fieldnames: {pformat(data['fieldnames'], indent=4)}"
         )
         self._raw_data = data["content"]
+
+    def __len__(self):
+        return len(self._data)

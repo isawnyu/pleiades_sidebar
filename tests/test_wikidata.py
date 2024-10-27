@@ -34,6 +34,11 @@ class TestWikidataDataset:
 
     def test_wikidata_dataset_load(self):
         """Did we load the expected number of items"""
+        assert len(self.wikidata_dataset) == 11
+
+    def test_wikidata_dataset_pleiades_indexing(self):
+        """Did we index the expected number of Pleiades IDs"""
+        assert len(self.wikidata_dataset._pleiades_index) == 11
 
 
 def test_wikidata_dataitem_initialization():

@@ -50,6 +50,18 @@ class WikidataDataset(Dataset):
     def parse_all(self):
         for raw_item in self._raw_data:
             wikidata_item = WikidataDataItem(raw_item)
+            try:
+                self._data[wikidata_item.uri]
+            except KeyError:
+                self._data[wikidata_item.uri] = wikidata_item
+            else:
+                raise RuntimeError(f"Wikidata URI collision: {wikidata_item.uri}")
+            for puri in wikidata_item.pleiades_uris:
+                try:
+                    self._pleiades_index[puri]
+                except KeyError:
+                    self._pleiades_index[puri] = set()
+                self._pleiades_index[puri].add(wikidata_item.uri)
 
 
 class WikidataDataItem(DataItem):
