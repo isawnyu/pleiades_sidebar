@@ -133,6 +133,7 @@ class Dataset:
             unpickler = Unpickler(f)
             self._data = unpickler.load()
         del f
+        self._pindex()
 
     def get(self, item_uri: str) -> DataItem:
         """Get a parsed dataitem by its URI"""
@@ -148,17 +149,39 @@ class Dataset:
         except KeyError:
             return list()
 
+    def get_pleiades_matches(self) -> dict:
+        """Return a dictionary with keys == pleiades_uris and values the matching database items"""
+        result = dict()
+        for puri, uris in self._pleiades_index.items():
+            result[puri] = [self._data[uri] for uri in uris]
+        return result
+
     def load(self, datafile_path: Path, load_method: str):
         """Load the target dataset"""
         cmd = f"_load_{load_method}"
         getattr(self, cmd)(datafile_path)
         self.parse_all()
         self.to_cache()
+        self._pindex()
 
     def parse_all(self):
         """Parse the already-loaded dataset"""
         # OVERRIDE THIS METHOD FOR EACH DATASET
         pass
+
+    def _pindex(self):
+        logger = logging.getLogger("Dataset._pindex")
+        for ditem in self._data.values():
+            for puri in ditem.pleiades_uris:
+                try:
+                    self._pleiades_index[puri]
+                except KeyError:
+                    self._pleiades_index[puri] = set()
+                else:
+                    logger.warning(
+                        f"Pleiades URI collision: {puri} in {ditem.uri} and {self._pleiades_index[puri]}"
+                    )
+                self._pleiades_index[puri].add(ditem.uri)
 
     def to_cache(self):
         path = Path(user_cache_dir("pleiades_sidebar", ensure_exists=True))

@@ -43,15 +43,16 @@ def norm(s: str) -> str:
 
 
 class WikidataDataset(Dataset):
-    def __init__(self, wikidata_path: Path = DEFAULT_WIKIDATA_PATH, use_cache=False):
+    def __init__(self, path: Path = DEFAULT_WIKIDATA_PATH, use_cache=False):
         Dataset.__init__(self)
         self.namespace = "wikidata"
         if use_cache:
             Dataset.from_cache(self, namespace="wikidata")
         else:
-            Dataset.load(self, wikidata_path, "csv")
+            Dataset.load(self, path, "csv")
 
     def parse_all(self):
+        logger = logging.getLogger("WikidataDataset.parse_all")
         for raw_item in self._raw_data:
             wikidata_item = WikidataDataItem(raw_item)
             try:
@@ -60,15 +61,6 @@ class WikidataDataset(Dataset):
                 self._data[wikidata_item.uri] = wikidata_item
             else:
                 raise RuntimeError(f"Wikidata URI collision: {wikidata_item.uri}")
-            for puri in wikidata_item.pleiades_uris:
-                try:
-                    self._pleiades_index[puri]
-                except KeyError:
-                    self._pleiades_index[puri] = wikidata_item.uri
-                else:
-                    raise RuntimeError(
-                        f"Pleiades URI collision: {puri} in {wikidata_item.uri} and {self._pleiades_index[puri]}"
-                    )
 
 
 class WikidataDataItem(DataItem):

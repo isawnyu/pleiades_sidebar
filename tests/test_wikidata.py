@@ -23,9 +23,7 @@ class TestWikidataDataset:
     @classmethod
     def setup_class(cls):
         # Create an instance of WikidataDataset
-        cls.wikidata_dataset = WikidataDataset(
-            wikidata_path=TEST_DATA_DIR / "wikidata.csv"
-        )
+        cls.wikidata_dataset = WikidataDataset(path=TEST_DATA_DIR / "wikidata.csv")
 
     def test_wikidata_dataset_initialization(self):
 
@@ -38,7 +36,7 @@ class TestWikidataDataset:
 
     def test_wikidata_dataset_pleiades_indexing(self):
         """Did we index the expected number of Pleiades IDs"""
-        assert len(self.wikidata_dataset._pleiades_index) == 11
+        assert len(self.wikidata_dataset.get_pleiades_matches()) == 11
 
     def test_wikidata_dataset_lpf(self):
         """Do we get an LPF feature collection?"""

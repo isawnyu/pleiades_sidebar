@@ -27,3 +27,15 @@ class Generator:
                 self.datasets[ns] = CLASSES_BY_NAMESPACE[ns](
                     path=path, use_cache=use_cached
                 )
+
+    def generate(self):
+        pleiades = dict()
+        for ns, dataset in self.datasets.items():
+            matches = dataset.get_pleiades_matches()
+            for puri, data_items in matches.items():
+                try:
+                    pleiades[puri]
+                except KeyError:
+                    pleiades[puri] = list()
+                pleiades[puri].extend([ditem.to_lpf_dict() for ditem in data_items])
+        return pleiades

@@ -11,6 +11,7 @@ Test the Generator module
 
 from pathlib import Path
 from pleiades_sidebar.generator import Generator
+from pprint import pprint
 import pytest
 
 TEST_DATA_DIR = Path("tests/data/")
@@ -31,4 +32,11 @@ class TestGenerator:
         assert isinstance(self.generator, Generator)
 
     def test_generator_from_cache(self):
+        g = Generator(
+            namespaces=["wikidata"], paths={"wikidata": TEST_DATA_DIR / "wikidata.csv"}
+        )
+        assert len(g.generate()) == 11
         g = Generator(namespaces=["wikidata"], use_cached=True)
+        p = g.generate()
+        pprint(p, indent=4)
+        assert len(p) == 11
