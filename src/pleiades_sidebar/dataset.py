@@ -149,11 +149,14 @@ class Dataset:
         except KeyError:
             return list()
 
-    def get_pleiades_matches(self) -> dict:
+    def get_pleiades_matches(self, omit_multiples=False) -> dict:
         """Return a dictionary with keys == pleiades_uris and values the matching database items"""
         result = dict()
         for puri, uris in self._pleiades_index.items():
-            result[puri] = [self._data[uri] for uri in uris]
+            if omit_multiples and len(uris) > 1:
+                pass
+            else:
+                result[puri] = [self._data[uri] for uri in uris]
         return result
 
     def load(self, datafile_path: Path, load_method: str):
