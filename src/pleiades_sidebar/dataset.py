@@ -206,5 +206,13 @@ class Dataset:
         )
         self._raw_data = data["content"]
 
+    def _load_tsv(self, datafile_path: Path):
+        data = get_csv(str(datafile_path), dialect="excel-tab", sample_lines=1000)
+        logger = logging.getLogger("_load_tsv")
+        logger.debug(
+            f"Loaded {len(data['content'])} rows of data with fieldnames: {pformat(data['fieldnames'], indent=4)}"
+        )
+        self._raw_data = data["content"]
+
     def __len__(self):
         return len(self._data)

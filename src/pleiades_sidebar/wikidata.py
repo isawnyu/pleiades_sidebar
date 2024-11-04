@@ -49,7 +49,7 @@ class WikidataDataset(Dataset):
         if use_cache:
             Dataset.from_cache(self, namespace="wikidata")
         else:
-            Dataset.load(self, path, "csv")
+            Dataset.load(self, path, "tsv")
 
     def parse_all(self):
         logger = logging.getLogger("WikidataDataset.parse_all")
