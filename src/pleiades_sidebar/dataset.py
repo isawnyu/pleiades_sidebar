@@ -22,7 +22,7 @@ RESOURCE_URIS = {
     "dare": "",
     "geonames": "",
     "gettytgn": "",
-    "itinere": "",
+    "itinere": "https://itiner-e.org/route-segment/",
     "idaigaz": "",
     "loc": "",
     "manto": "",
@@ -61,20 +61,15 @@ class DataItem:
         # TBD: make spatial?
         self._parse()
 
-    def to_lpf_dict(self):
-        d = deepcopy(LPF_FEATURE_TEMPLATE)
-        d["@id"] = self.uri
-        d["properties"]["title"] = self.label
-        d["properties"]["summary"] = self.summary
-        for domain_links in self.links.values():
-            for link in domain_links:
-                dl = {"type": "closeMatch", "identifier": link}
-                d["links"].append(dl)
-        return d
-
     @property
     def pleiades_uris(self) -> str:
-        return self.links["pleiades.stoa.org"]
+        clean_links = set()
+        for link in self.links["pleiades.stoa.org"]:
+            if isinstance(link, str):
+                clean_links.add(link)
+            elif isinstance(link, tuple):
+                clean_links.add(link[1])
+        return list(clean_links)
 
     def to_lpf_dict(self):
         """Get LPF formatted dictionary, suitable to save as JSON"""
@@ -82,9 +77,23 @@ class DataItem:
         d["@id"] = self.uri
         d["properties"]["title"] = self.label
         d["properties"]["summary"] = self.summary
+        link_uris = set()
         for domain_links in self.links.values():
             for link in domain_links:
-                dl = {"type": "closeMatch", "identifier": link}
+                if isinstance(link, str):
+                    if link not in link_uris:
+                        link_uris.add(link)
+                        dl = {"type": "closeMatch", "identifier": link}
+                    else:
+                        continue
+                elif isinstance(link, tuple) and len(link) == 2:
+                    if link[1] not in link_uris:
+                        link_uris.add(link[1])
+                        dl = {"type": link[0], "identifier": link[1]}
+                    else:
+                        continue
+                else:
+                    raise ValueError(type(link))
                 d["links"].append(dl)
         return d
 

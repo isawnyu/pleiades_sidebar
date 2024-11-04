@@ -12,11 +12,14 @@ Python 3 script template (changeme)
 from airtight.cli import configure_commandline
 import json
 import logging
+from os import environ
 from pathlib import Path
 from pleiades_sidebar.generator import Generator
+from pprint import pprint, pformat
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_NAMESPACES = environ.get("SIDEBAR_NAMESPACES")
 DEFAULT_LOG_LEVEL = logging.WARNING
 OPTIONAL_ARGUMENTS = [
     [
@@ -36,7 +39,13 @@ OPTIONAL_ARGUMENTS = [
         False,
     ],
     ["-c", "--usecache", False, "use cached data", False],
-    ["-n", "--namespaces", "", "comma-separated list of namespaces to load", False],
+    [
+        "-n",
+        "--namespaces",
+        DEFAULT_NAMESPACES,
+        "comma-separated list of namespaces to load",
+        False,
+    ],
     ["-o", "--output", "", "path to output JSON file", False],
 ]
 POSITIONAL_ARGUMENTS = [

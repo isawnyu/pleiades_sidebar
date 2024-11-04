@@ -57,15 +57,19 @@ class ItinerEDataItem(DataItem):
     def _parse(self):
         """Parse the ItinerE ndjson export format"""
 
-        logger = logging.getLogger("ItinerEDataItem._parse")
+        # logger = logging.getLogger("ItinerEDataItem._parse")
+
         # label
-        # TBD
+        self.label = (
+            f"{self._raw_data['id']} {norm(self._raw_data['properties']['name'])}"
+        )
 
         # uri
-        # TBD
+        self.uri = self._get_base_uri("itinere") + str(self._raw_data["id"])
 
         # summary
-        # TBD
+        # none
 
         # links
-        # TBD
+        links = {p["properties"]["url"] for p in self._raw_data["pleiadesPlaces"]}
+        self.links = {"pleiades.stoa.org": [("relatedMatch", link) for link in links]}
