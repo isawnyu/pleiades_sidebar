@@ -10,6 +10,7 @@ Define a base class for a dataset manager
 """
 from copy import deepcopy
 from encoded_csv import get_csv
+import jsonlines
 import logging
 from pathlib import Path
 from platformdirs import user_cache_dir
@@ -21,6 +22,7 @@ RESOURCE_URIS = {
     "dare": "",
     "geonames": "",
     "gettytgn": "",
+    "itinere": "",
     "idaigaz": "",
     "loc": "",
     "manto": "",
@@ -205,6 +207,11 @@ class Dataset:
             f"Loaded {len(data['content'])} rows of data with fieldnames: {pformat(data['fieldnames'], indent=4)}"
         )
         self._raw_data = data["content"]
+
+    def _load_ndjson(self, datafile_path: Path):
+        with jsonlines.open(str(datafile_path)) as reader:
+            self._raw_data = [obj for obj in reader]
+        del reader
 
     def _load_tsv(self, datafile_path: Path):
         data = get_csv(str(datafile_path), dialect="excel-tab", sample_lines=1000)

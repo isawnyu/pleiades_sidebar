@@ -10,9 +10,10 @@ Define a class for generating sidebar data from multiple sources
 """
 
 from os import environ
+from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.wikidata import WikidataDataset
 
-CLASSES_BY_NAMESPACE = {"wikidata": WikidataDataset}
+CLASSES_BY_NAMESPACE = {"wikidata": WikidataDataset, "itinere": ItinerEDataset}
 
 
 class Generator:
