@@ -192,7 +192,7 @@ class Dataset:
                 except KeyError:
                     self._pleiades_index[puri] = set()
                 else:
-                    logger.warning(
+                    logger.debug(
                         f"Pleiades URI collision: {puri} in {ditem.uri} and {self._pleiades_index[puri]}"
                     )
                 self._pleiades_index[puri].add(ditem.uri)

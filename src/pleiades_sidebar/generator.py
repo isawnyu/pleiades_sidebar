@@ -8,9 +8,10 @@
 """
 Define a class for generating sidebar data from multiple sources
 """
-
+import logging
 from os import environ
 from pleiades_sidebar.itinere import ItinerEDataset
+from pleiades_sidebar.pleiades import PleiadesDataset
 from pleiades_sidebar.wikidata import WikidataDataset
 
 CLASSES_BY_NAMESPACE = {"wikidata": WikidataDataset, "itinere": ItinerEDataset}
@@ -19,6 +20,10 @@ CLASSES_BY_NAMESPACE = {"wikidata": WikidataDataset, "itinere": ItinerEDataset}
 class Generator:
     def __init__(self, namespaces: list, paths: dict = {}, use_cached: bool = False):
         self.datasets = {}
+        try:
+            self._pleiades_path = paths["pleiades"]
+        except KeyError:
+            self._pleiades_path = None
         for ns in namespaces:
             try:
                 path = paths[ns]
@@ -30,13 +35,41 @@ class Generator:
                 )
 
     def generate(self):
-        pleiades = dict()
+        logger = logging.getLogger("Generator.generate")
+        if self._pleiades_path is not None:
+            pleiades = PleiadesDataset(self._pleiades_path)
+        else:
+            pleiades = PleiadesDataset()
+        pleiades_links = dict()
+
+        sidebar = dict()
         for ns, dataset in self.datasets.items():
             matches = dataset.get_pleiades_matches()
             for puri, data_items in matches.items():
                 try:
-                    pleiades[puri]
+                    sidebar[puri]
                 except KeyError:
-                    pleiades[puri] = list()
-                pleiades[puri].extend([ditem.to_lpf_dict() for ditem in data_items])
-        return pleiades
+                    sidebar[puri] = list()
+                try:
+                    these_pleiades_links = pleiades_links[puri]
+                except KeyError:
+                    pleiades_links[puri] = set()
+                    try:
+                        pleiades_place = pleiades.get(puri)
+                    except FileNotFoundError:
+                        logger.error(
+                            f"Non-existent Pleiades place {puri} referenced in {ns}. Ignored."
+                        )
+                        continue
+                    for r in pleiades_place["references"]:
+                        if r["accessURI"]:
+                            pleiades_links[puri].add(r["accessURI"])
+                    these_pleiades_links = pleiades_links[puri]
+                for ditem in data_items:
+                    ditem_lpf = ditem.to_lpf_dict()
+                    if ditem.uri in these_pleiades_links:
+                        ditem_lpf["properties"]["reciprocal"] = True
+                    else:
+                        ditem_lpf["properties"]["reciprocal"] = False
+                    sidebar[puri].append(ditem_lpf)
+        return sidebar
