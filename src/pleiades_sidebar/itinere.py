@@ -68,7 +68,18 @@ class ItinerEDataItem(DataItem):
         self.uri = self._get_base_uri("itinere") + str(self._raw_data["id"])
 
         # summary
-        # none
+        slist = [
+            norm(self._raw_data["properties"][k])
+            for k in ["segmentCertainty", "constructionPeriod", "type"]
+            if self._raw_data["properties"][k] is not None
+        ]
+        slist = [s for s in slist if s]
+        s = " ".join(slist)
+        if self._raw_data["properties"]["itinerary"]:
+            s += f" ({norm(self._raw_data['properties']['itinerary'])})"
+        elif self._raw_data["properties"]["description"]:
+            s += f" ({norm(self._raw_data['properties']['description'])})"
+        self.summary = s
 
         # links
         links = {p["properties"]["url"] for p in self._raw_data["pleiadesPlaces"]}

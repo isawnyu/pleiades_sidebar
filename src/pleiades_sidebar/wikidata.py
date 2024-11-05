@@ -84,7 +84,9 @@ class WikidataDataItem(DataItem):
         self.uri = norm(self._raw_data["item"])
 
         # summary
-        # TBD
+        self.summary = norm(self._raw_data["itemDescription"])
+        if self.summary:
+            self.summary = self.summary[0].upper() + self.summary[1:]
 
         # links
         links = set()
