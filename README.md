@@ -9,7 +9,7 @@ The data can be found in the [pleiades.datasets](https://github.com/isawnyu/plei
 - [ ] [Archaeocosmos](http://archaeocosmos.arch.uoa.gr/)
 - [x] [Chronique des fouilles en ligne/Archaeology in Greece Online](https://chronique.efa.gr)
 - [ ] [Digital Periegesis](https://www.periegesis.org/en/)
-- [ ] [Epigraphic Database Heidelberg](https://edh.ub.uni-heidelberg.de/geographie/suche)
+- [x] [Epigraphic Database Heidelberg Geographic Database](https://edh.ub.uni-heidelberg.de/geographie/suche)
 - [ ] [Gazetteer of Ancient Arabia](https://ancientarabia.huma-num.fr/gazetteer)
 - [ ] [iDAI gazetteer (German Archaeological Institute)](https://gazetteer.dainst.org/)
 - [ ] [Inscriptions of Sicily](http://sicily.classics.ox.ac.uk/)

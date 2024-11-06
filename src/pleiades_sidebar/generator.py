@@ -11,6 +11,7 @@ Define a class for generating sidebar data from multiple sources
 import logging
 from os import environ
 from pleiades_sidebar.cfl_ago import CFLAGODataset
+from pleiades_sidebar.edh_geo import EDHGEODataset
 from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.manto import MANTODataset
 from pleiades_sidebar.pleiades import PleiadesDataset
@@ -20,6 +21,7 @@ from validators import url as valid_uri
 
 CLASSES_BY_NAMESPACE = {
     "cflago": CFLAGODataset,
+    "edhgeo": EDHGEODataset,
     "itinere": ItinerEDataset,
     "manto": MANTODataset,
     "wikidata": WikidataDataset,
@@ -108,7 +110,7 @@ class Generator:
                         except IndexError:
                             continue
                     normalized_pleiades_links.add(f"{domain}:{probable_id}")
-                for ditem in data_items:
+                for ditem in sorted(data_items, key=lambda x: x.uri):
                     parts = urlparse(ditem.uri)
                     domain = parts.netloc
                     if domain.startswith("www."):

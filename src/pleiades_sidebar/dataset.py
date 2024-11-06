@@ -20,7 +20,8 @@ from pickle import Pickler, Unpickler
 RESOURCE_URIS = {
     "cfl/ado": "",
     "dare": "",
-    "geonames": "",
+    "edhgeo": "https://edh.ub.uni-heidelberg.de/edh/geographie/",
+    "geonames": "https://www.geonames.org/",
     "gettytgn": "",
     "itinere": "https://itiner-e.org/route-segment/",
     "idaigaz": "",
@@ -29,7 +30,7 @@ RESOURCE_URIS = {
     "nomisma": "",
     "pleiades": "https://pleiades.stoa.org/places/",
     "topostext": "",
-    "trismegistos": "",
+    "trismegistos": "https://www.trismegistos.org/place/",
     "viaf": "",
     "vici": "",
     "wikidata": "https://wikidata.org/entities/",
