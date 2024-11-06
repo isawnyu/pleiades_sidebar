@@ -64,7 +64,11 @@ class DataItem:
     @property
     def pleiades_uris(self) -> str:
         clean_links = set()
-        for link in self.links["pleiades.stoa.org"]:
+        try:
+            pleiades_links = self.links["pleiades.stoa.org"]
+        except KeyError:
+            return list(clean_links)
+        for link in pleiades_links:
             if isinstance(link, str):
                 clean_links.add(link)
             elif isinstance(link, tuple):

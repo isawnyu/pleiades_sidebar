@@ -6,69 +6,71 @@
 #
 
 """
-Define a class for managing data from MANTO
+Define a class for managing data from CFL/AGO
 """
+
 import logging
 from os import environ
 from pathlib import Path
 from pleiades_sidebar.dataset import Dataset, DataItem
 from pleiades_sidebar.norm import norm
 
-DEFAULT_MANTO_PATH = Path(environ["MANTO_PATH"]).expanduser().resolve()
+DEFAULT_CFL_AGO_PATH = Path(environ["CFL_AGO_PATH"]).expanduser().resolve()
 
 
-class MANTODataset(Dataset):
-    def __init__(self, path: Path = DEFAULT_MANTO_PATH, use_cache=False):
+class CFLAGODataset(Dataset):
+    def __init__(self, path: Path = DEFAULT_CFL_AGO_PATH, use_cache=False):
         Dataset.__init__(self)
-        self.namespace = "manto"
+        self.namespace = "cflago"
         if use_cache:
-            Dataset.from_cache(self, namespace="manto")
+            Dataset.from_cache(self, namespace=self.namespace)
         else:
             Dataset.load(self, path, "csv")
 
     def parse_all(self):
-        logger = logging.getLogger("MANTODataset.parse_all")
+        logger = logging.getLogger("CFLAGODataset.parse_all")
         for raw_item in self._raw_data:
-            item = MANTODataItem(raw_item)
+            item = CFLAGOataItem(raw_item)
             try:
                 self._data[item.uri]
             except KeyError:
                 self._data[item.uri] = item
             else:
-                logger.debug(f"MANTO URI collision: {item.uri}. Merging ...")
+                logger.debug(f"CFL/AGO URI collision: {item.uri}. Merging ...")
                 self._data[item.uri].links["pleiades.stoa.org"].extend(
                     item.links["pleiades.stoa.org"]
                 )
 
 
-class MANTODataItem(DataItem):
+class CFLAGOataItem(DataItem):
     def __init__(self, raw: dict):
         DataItem.__init__(self, raw=raw)
         self._raw_data = raw
 
     def _parse(self):
-        """Parse MANTO CSV data"""
+        """Parse CFL/AGO CSV data"""
 
-        logger = logging.getLogger("MANTODataItem._parse")
+        logger = logging.getLogger("CFLAGODataItem._parse")
+
         # label
-        self.label = norm(self._raw_data["Name"])
+        self.label = norm(self._raw_data["Full_name"])
 
         # uri
-        self.uri = "https://resource.manto.unh.edu/" + norm(self._raw_data["Object ID"])
+        id = self._raw_data["Id"][len('GA_OPE_EDIT" target="_blank">') :].strip()
+        self.uri = "https://chronique.efa.gr/?r=topo_public&id=" + id
 
         # summary
-        self.summary = norm(self._raw_data["Information"])
-        if self.summary:
-            self.summary = self.summary[0].upper() + self.summary[1:]
+        self.summary = ""
 
         # links
-        pid = self._raw_data["Pleiades"].strip()
+        pid = self._raw_data["Pleiades_id"].strip()
         if pid:
             self.links = {
                 "pleiades.stoa.org": [
                     (
                         "relatedMatch",
-                        "https://pleiades.stoa.org/places/" + pid,
+                        "https://pleiades.stoa.org/places/"
+                        + self._raw_data["Pleiades_id"].strip(),
                     )
                 ]
             }

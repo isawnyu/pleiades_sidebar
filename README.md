@@ -7,7 +7,7 @@ The data can be found in the [pleiades.datasets](https://github.com/isawnyu/plei
 ## Supported external resources (roadmap)
 
 - [ ] [Archaeocosmos](http://archaeocosmos.arch.uoa.gr/)
-- [ ] [Chronique des fouilles en ligne/Archaeology in Greece Online](https://chronique.efa.gr)
+- [x] [Chronique des fouilles en ligne/Archaeology in Greece Online](https://chronique.efa.gr)
 - [ ] [Digital Periegesis](https://www.periegesis.org/en/)
 - [ ] [Epigraphic Database Heidelberg](https://edh.ub.uni-heidelberg.de/geographie/suche)
 - [ ] [Gazetteer of Ancient Arabia](https://ancientarabia.huma-num.fr/gazetteer)

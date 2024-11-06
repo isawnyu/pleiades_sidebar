@@ -10,17 +10,19 @@ Define a class for generating sidebar data from multiple sources
 """
 import logging
 from os import environ
+from pleiades_sidebar.cfl_ago import CFLAGODataset
 from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.manto import MANTODataset
 from pleiades_sidebar.pleiades import PleiadesDataset
 from pleiades_sidebar.wikidata import WikidataDataset
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from validators import url as valid_uri
 
 CLASSES_BY_NAMESPACE = {
-    "wikidata": WikidataDataset,
+    "cflago": CFLAGODataset,
     "itinere": ItinerEDataset,
     "manto": MANTODataset,
+    "wikidata": WikidataDataset,
 }
 
 
@@ -89,19 +91,46 @@ class Generator:
                     domain = parts.netloc
                     if domain.startswith("www."):
                         domain = domain[4:]
-                    path = [p.strip() for p in parts.path.split("/") if p.strip()]
+                    query = parse_qs(parts.query)
                     try:
-                        probable_id = path[-1]
-                    except IndexError:
-                        continue
+                        id_list = query["id"]
+                    except KeyError:
+                        id_list = list()
+                    else:
+                        if len(id_list) == 1:
+                            probable_id = id_list[0].strip()
+                        else:
+                            id_list = list()
+                    if not id_list:
+                        path = [p.strip() for p in parts.path.split("/") if p.strip()]
+                        try:
+                            probable_id = path[-1]
+                        except IndexError:
+                            continue
                     normalized_pleiades_links.add(f"{domain}:{probable_id}")
                 for ditem in data_items:
                     parts = urlparse(ditem.uri)
                     domain = parts.netloc
                     if domain.startswith("www."):
                         domain = domain[4:]
-                    path = [p.strip() for p in parts.path.split("/") if p.strip()]
-                    probable_id = path[-1]
+                    query = parse_qs(parts.query)
+                    try:
+                        id_list = query["id"]
+                    except KeyError:
+                        id_list = list()
+                    else:
+                        if len(id_list) == 1:
+                            probable_id = id_list[0].strip()
+                        else:
+                            id_list = list()
+                    if not id_list:
+                        path = [p.strip() for p in parts.path.split("/") if p.strip()]
+                        try:
+                            probable_id = path[-1]
+                        except IndexError as err:
+                            err.add_note(ditem.uri)
+                            raise err
+
                     normalized_item_uri = f"{domain}:{probable_id}"
                     ditem_lpf = ditem.to_lpf_dict()
                     if normalized_item_uri in normalized_pleiades_links:
