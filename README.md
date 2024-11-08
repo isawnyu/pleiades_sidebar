@@ -15,7 +15,7 @@ The data can be found in the [pleiades.datasets](https://github.com/isawnyu/plei
 - [ ] [Inscriptions of Sicily](http://sicily.classics.ox.ac.uk/)
 - [x] [Itiner-e](https://itiner-e.org/)
 - [x] [MANTO](https://www.manto-myth.org/manto)
-- [ ] [Nomisma](https://nomisma.org/)
+- [x] [Nomisma](https://nomisma.org/)
 - [ ] [Syriac gazetteer](https://syriaca.org/geo/index.html)
 - [ ] [Temples of the Classical World](https://romeresearchgroup.org/database-of-temples/)
 - [ ] [ToposText](https://topostext.org/)

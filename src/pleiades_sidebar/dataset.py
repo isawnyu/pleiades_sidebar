@@ -10,6 +10,7 @@ Define a base class for a dataset manager
 """
 from copy import deepcopy
 from encoded_csv import get_csv
+import json
 import jsonlines
 import logging
 from pathlib import Path
@@ -27,7 +28,7 @@ RESOURCE_URIS = {
     "idaigaz": "",
     "loc": "",
     "manto": "",
-    "nomisma": "",
+    "nomisma": "http://nomisma.org/id/",
     "pleiades": "https://pleiades.stoa.org/places/",
     "topostext": "",
     "trismegistos": "https://www.trismegistos.org/place/",
@@ -221,6 +222,12 @@ class Dataset:
             f"Loaded {len(data['content'])} rows of data with fieldnames: {pformat(data['fieldnames'], indent=4)}"
         )
         self._raw_data = data["content"]
+
+    def _load_jsonld(self, datafile_path: Path):
+        with open(datafile_path, "r", encoding="utf-8") as f:
+            linked_data = json.load(f)
+        del f
+        self._raw_data = linked_data["@graph"]
 
     def _load_ndjson(self, datafile_path: Path):
         with jsonlines.open(str(datafile_path)) as reader:

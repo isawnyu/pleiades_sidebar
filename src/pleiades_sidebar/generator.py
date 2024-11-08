@@ -14,6 +14,7 @@ from pleiades_sidebar.cfl_ago import CFLAGODataset
 from pleiades_sidebar.edh_geo import EDHGEODataset
 from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.manto import MANTODataset
+from pleiades_sidebar.nomisma import NomismaDataset
 from pleiades_sidebar.pleiades import PleiadesDataset
 from pleiades_sidebar.wikidata import WikidataDataset
 from urllib.parse import urlparse, parse_qs
@@ -24,6 +25,7 @@ CLASSES_BY_NAMESPACE = {
     "edhgeo": EDHGEODataset,
     "itinere": ItinerEDataset,
     "manto": MANTODataset,
+    "nomisma": NomismaDataset,
     "wikidata": WikidataDataset,
 }
 
