@@ -110,7 +110,7 @@ class Generator:
                         except IndexError:
                             continue
                     normalized_pleiades_links.add(f"{domain}:{probable_id}")
-                for ditem in sorted(data_items, key=lambda x: x.uri):
+                for ditem in data_items:
                     parts = urlparse(ditem.uri)
                     domain = parts.netloc
                     if domain.startswith("www."):
@@ -141,6 +141,17 @@ class Generator:
                     else:
                         ditem_lpf["properties"]["reciprocal"] = False
                     sidebar[puri].append(ditem_lpf)
+        for puri in sidebar.keys():
+            raw_ditems = sidebar[puri]
+            cooked_ditems = list()
+            for raw_ditem in raw_ditems:
+                cooked_ditem = raw_ditem
+                cooked_links = sorted(
+                    raw_ditem["links"], key=lambda link: link["identifier"]
+                )
+                cooked_ditem["links"] = cooked_links
+                cooked_ditems.append(cooked_ditem)
+            sidebar[puri] = sorted(cooked_ditems, key=lambda d: d["@id"])
         logger.info(
             f"There are {all_match_count:,} Pleiades matches across all {len(self.datasets):,} datasets "
             f"({", ".join(sorted(self.datasets.keys()))}). "
