@@ -68,9 +68,21 @@ def main(**kwargs):
         if outpath.is_dir():
             for puri, data in p.items():
                 pid = puri.split("/")[-1]
-                dirpath = outpath / pid[0] / pid[1] / pid[2]
+                try:
+                    dirpath = outpath / pid[0] / pid[1] / pid[2]
+                except IndexError as err:
+                    err.add_note(f"Failed creation of output path from puri: '{puri}'")
+                    raise err
                 dirpath.mkdir(parents=True, exist_ok=True)
                 filepath = dirpath / f"{pid}.json"
+                if not filepath.is_file():
+                    # don't write a file at all if we don't have content, unless we are
+                    # overwriting a file that's already there
+                    if len(data) == 0:
+                        logger.warning(
+                            f"Skipped writing {filepath} because there is no data content and the file did not already exist."
+                        )
+                        continue
                 with open(filepath, "w", encoding="utf-8") as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
                 del f
