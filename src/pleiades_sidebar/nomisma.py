@@ -14,10 +14,14 @@ from pathlib import Path
 from pleiades_sidebar.dataset import Dataset, DataItem
 from pleiades_sidebar.norm import norm
 from pprint import pformat
+import re
 from urllib.parse import urlparse
 from validators import url as valid_url
 
 DEFAULT_NOMISMA_PATH = Path(environ["NOMISMA_PATH"]).expanduser().resolve()
+RX_PLEIADES_NAME_URI = re.compile(
+    f"^(?P<puri>https://pleiades.stoa.org/places/\d+)/[a-z]+/?$"
+)
 
 
 class NomismaDataset(Dataset):
@@ -145,4 +149,10 @@ class NomismaDataItem(DataItem):
             except KeyError:
                 self.links[parts.netloc] = list()
             if cm not in self.links[parts.netloc]:
-                self.links[parts.netloc].append(cm)
+                m = RX_PLEIADES_NAME_URI.match(cm)
+                if m is not None:
+                    self.links[parts.netloc].append(m.group("puri"))
+                elif cm[-1] == "/":
+                    self.links[parts.netloc].append(cm[:-1])
+                else:
+                    self.links[parts.netloc].append(cm)
