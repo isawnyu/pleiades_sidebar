@@ -17,10 +17,10 @@ The data can be found in the [pleiades.datasets](https://github.com/isawnyu/plei
 - [x] [Itiner-e](https://itiner-e.org/)
 - [x] [MANTO](https://www.manto-myth.org/manto)
 - [x] [Nomisma](https://nomisma.org/)
-- [ ] [PAThs Atlas: ](https://atlas.paths-erc.eu/map/saved/all_ms_places)
+- [ ] [PAThs Atlas](https://atlas.paths-erc.eu/map/saved/all_ms_places) - data is readily available on line in bulk
 - [ ] [Syriac gazetteer](https://syriaca.org/geo/index.html)
-- [ ] [Temples of the Classical World](https://romeresearchgroup.org/database-of-temples/)
-- [ ] [ToposText](https://topostext.org/)
+- [ ] [Temples of the Classical World](https://romeresearchgroup.org/database-of-temples/) - data is readily available on line in bulk
+- [ ] [ToposText](https://topostext.org/) - data is readily available on line in bulk, but out of date
 - [ ] [Trismegistos Geo](https://www.trismegistos.org/geo/)
 - [ ] [Vici.org](https://vici.org)
 - [x] Wikidata, [via a TSV dump of a SPARQL query](https://github.com/isawnyu/pleiades_wikidata/)
