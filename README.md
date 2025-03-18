@@ -6,6 +6,7 @@ The data can be found in the [pleiades.datasets](https://github.com/isawnyu/plei
 
 ## Supported external resources (roadmap)
 
+- [ ] [Ancient Ports - Ports Antiques](https://www.ancientportsantiques.com/)
 - [ ] [Archaeocosmos](http://archaeocosmos.arch.uoa.gr/)
 - [x] [Chronique des fouilles en ligne/Archaeology in Greece Online](https://chronique.efa.gr)
 - [ ] [Digital Periegesis](https://www.periegesis.org/en/)
@@ -16,6 +17,7 @@ The data can be found in the [pleiades.datasets](https://github.com/isawnyu/plei
 - [x] [Itiner-e](https://itiner-e.org/)
 - [x] [MANTO](https://www.manto-myth.org/manto)
 - [x] [Nomisma](https://nomisma.org/)
+- [ ] [PAThs Atlas: ](https://atlas.paths-erc.eu/map/saved/all_ms_places)
 - [ ] [Syriac gazetteer](https://syriaca.org/geo/index.html)
 - [ ] [Temples of the Classical World](https://romeresearchgroup.org/database-of-temples/)
 - [ ] [ToposText](https://topostext.org/)
