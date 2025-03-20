@@ -16,6 +16,7 @@ from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.manto import MANTODataset
 from pleiades_sidebar.nomisma import NomismaDataset
 from pleiades_sidebar.pleiades import PleiadesDataset
+from pleiades_sidebar.temples_classical_world import ClassicalTemplesDataset
 from pleiades_sidebar.wikidata import WikidataDataset
 from urllib.parse import urlparse, parse_qs
 from validators import url as valid_uri
@@ -26,6 +27,7 @@ CLASSES_BY_NAMESPACE = {
     "itinere": ItinerEDataset,
     "manto": MANTODataset,
     "nomisma": NomismaDataset,
+    "classical_temples": ClassicalTemplesDataset,
     "wikidata": WikidataDataset,
 }
 
