@@ -223,6 +223,12 @@ class Dataset:
         )
         self._raw_data = data["content"]
 
+    def _load_json(self, datafile_path: Path):
+        with open(datafile_path, "r", encoding="utf-8") as f:
+            j = json.load(f)
+        del f
+        self._raw_data = j
+
     def _load_jsonld(self, datafile_path: Path):
         with open(datafile_path, "r", encoding="utf-8") as f:
             linked_data = json.load(f)

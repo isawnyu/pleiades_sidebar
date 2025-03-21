@@ -15,6 +15,7 @@ from pleiades_sidebar.edh_geo import EDHGEODataset
 from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.manto import MANTODataset
 from pleiades_sidebar.nomisma import NomismaDataset
+from pleiades_sidebar.paths_atlas import PathsAtlasDataset
 from pleiades_sidebar.pleiades import PleiadesDataset
 from pleiades_sidebar.temples_classical_world import ClassicalTemplesDataset
 from pleiades_sidebar.wikidata import WikidataDataset
@@ -23,11 +24,12 @@ from validators import url as valid_uri
 
 CLASSES_BY_NAMESPACE = {
     "cflago": CFLAGODataset,
+    "classical_temples": ClassicalTemplesDataset,
     "edhgeo": EDHGEODataset,
     "itinere": ItinerEDataset,
     "manto": MANTODataset,
     "nomisma": NomismaDataset,
-    "classical_temples": ClassicalTemplesDataset,
+    "paths_atlas": PathsAtlasDataset,
     "wikidata": WikidataDataset,
 }
 
