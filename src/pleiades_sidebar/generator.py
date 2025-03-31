@@ -59,12 +59,28 @@ class Generator:
             pleiades = PleiadesDataset()
         pleiades_links = dict()
 
+        # sidebar:
+        # data for consumption by sidebar widget on Pleiades website
+        # keys are pleiades uris
+        # values are lists of third-party matches, each represented by a dictionary
+        # using abbreviated Linked Places Format
         sidebar = dict()
-        all_match_count = 0
-        all_reciprocal_count = 0
+
+        # unreciprocated:
+        # data to use to guide supervised work adding unreciprocated outside links
+        # keys are external namespaces
+        # values are lists of third-party matches in that namespace which are unreciprocated
+        # by Pleiades, each represented by a dictionary using abbreviated Linked Places Format
+        unreciprocated = dict()
+
+        all_match_count = 0  # total number of matches
+        all_reciprocal_count = 0  # total number of reciprocated matches
+
         for ns, dataset in self.datasets.items():
+            unreciprocated[ns] = list()
             matches = dataset.get_pleiades_matches()
             all_match_count += len(matches)
+
             logger.info(
                 f"Checking for Pleiades reciprocity in {len(matches)} links from the {ns} dataset."
             )
@@ -144,7 +160,10 @@ class Generator:
                         all_reciprocal_count += 1
                     else:
                         ditem_lpf["properties"]["reciprocal"] = False
+                        unreciprocated[ns].append(ditem_lpf)
                     sidebar[puri].append(ditem_lpf)
+
+        # sort data to facilitate run-to-run diff
         for puri in sidebar.keys():
             raw_ditems = sidebar[puri]
             cooked_ditems = list()
@@ -156,10 +175,22 @@ class Generator:
                 cooked_ditem["links"] = cooked_links
                 cooked_ditems.append(cooked_ditem)
             sidebar[puri] = sorted(cooked_ditems, key=lambda d: d["@id"])
+        for ns in unreciprocated.keys():
+            raw_ditems = unreciprocated[ns]
+            cooked_ditems = list()
+            for raw_ditem in raw_ditems:
+                cooked_ditem = raw_ditem
+                cooked_links = sorted(
+                    raw_ditem["links"], key=lambda link: link["identifier"]
+                )
+                cooked_ditem["links"] = cooked_links
+                cooked_ditems.append(cooked_ditem)
+            unreciprocated[ns] = sorted(cooked_ditems, key=lambda d: d["@id"])
+
         logger.info(
             f"There are {all_match_count:,} Pleiades matches across all {len(self.datasets):,} datasets "
             f"({", ".join(sorted(self.datasets.keys()))}). "
             f"{all_reciprocal_count:,} of these are reciprocated by Pleiades. "
             f"{len(sidebar):,} unique Pleiades places are referenced. "
         )
-        return sidebar
+        return (sidebar, unreciprocated)
