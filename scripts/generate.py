@@ -1,7 +1,7 @@
 #
 # This file is part of pleiades_sidebar
 # by Tom Elliott for the Institute for the Study of the Ancient World
-# (c) Copyright 2024 by New York University
+# (c) Copyright 2024-2025 by New York University
 # Licensed under the AGPL-3.0; see LICENSE.txt file.
 #
 
@@ -16,6 +16,7 @@ from os import environ
 from pathlib import Path
 from pleiades_sidebar.generator import Generator
 from pprint import pprint, pformat
+from slugify import slugify
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,13 @@ OPTIONAL_ARGUMENTS = [
         "comma-separated list of namespaces to load",
         False,
     ],
-    ["-o", "--output", "", "path to output JSON file", False],
+    [
+        "-o",
+        "--output",
+        "",
+        "path to directory into which to write output JSON files",
+        False,
+    ],
 ]
 POSITIONAL_ARGUMENTS = [
     # each row is a list with 3 elements: name, type, help
@@ -59,7 +66,7 @@ def main(**kwargs):
     """
     namespaces = [ns.strip() for ns in kwargs["namespaces"].split(",")]
     g = Generator(namespaces)
-    p = g.generate()
+    p, unrecip = g.generate()
     outpath = kwargs["output"].strip()
     if outpath:
         outpath = Path(outpath).expanduser().resolve()
@@ -86,7 +93,13 @@ def main(**kwargs):
                 with open(filepath, "w", encoding="utf-8") as f:
                     json.dump(data, f, ensure_ascii=False, indent=4)
                 del f
-            logger.info(f"Wrote JSON to {str(outpath)}")
+            logger.info(f"Wrote sidebar JSON to {str(outpath)}")
+            for ns, data in unrecip.items():
+                pathsafe_ns = slugify(ns, separator="_")
+                filepath = outpath / f"unreciprocated_{pathsafe_ns}.json"
+                with open(filepath, "w", encoding="utf-8") as f:
+                    json.dump(data, f, ensure_ascii=False, indent=4)
+                del f
         else:
             logger.error(
                 f"Could not write JSON because outpath is not a directory: {outpath}"
