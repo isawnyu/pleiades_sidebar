@@ -9,6 +9,7 @@
 On-demand Pleiades dataset
 """
 import json
+from logging import getLogger
 from os import environ
 from os.path import join as pathjoin
 from pathlib import Path
@@ -26,6 +27,7 @@ class PleiadesDataset:
         return self._path
 
     def get(self, puri: str) -> dict:
+        logger = getLogger("PleiadesDataset.get")
         try:
             return self._places[puri]
         except KeyError:
@@ -34,6 +36,7 @@ class PleiadesDataset:
             parts = parts[0 : len(parts) - 2]
             parts.append(pid)
             ppath = self._path / "{}.json".format(pathjoin(*parts))
+            logger.debug(f"ppath='{ppath}'")
             # paths = list(self._path.glob(f"**/{pid}.json"))
             # if len(paths) != 1:
             #    raise RuntimeError(f"puri='{puri}', pid='{pid}', paths={paths}")

@@ -55,10 +55,12 @@ class Generator:
 
     def generate(self):
         logger = logging.getLogger("Generator.generate")
+        logger.debug(f"pleiades_path={self._pleiades_path}")
         if self._pleiades_path is not None:
             pleiades = PleiadesDataset(self._pleiades_path)
         else:
             pleiades = PleiadesDataset()
+        logger.debug(f"actual pleiades._path={pleiades._path}")
         pleiades_links = dict()
 
         # sidebar:
@@ -87,10 +89,15 @@ class Generator:
                 f"Checking for Pleiades reciprocity in {len(matches)} links from the {ns} dataset."
             )
             for puri, data_items in matches.items():
+                # ensure we have a list in the sidebar dictionary for the pleiades uri we are processing
+                puri = puri.replace("http://", "https://")
                 try:
                     sidebar[puri]
                 except KeyError:
                     sidebar[puri] = list()
+
+                # ensure we have a list of references drawn from the pleiades place we are processing
+                # use only those references that have accessURIs
                 try:
                     these_pleiades_links = pleiades_links[puri]
                 except KeyError:
@@ -106,6 +113,8 @@ class Generator:
                         if r["accessURI"]:
                             pleiades_links[puri].add(r["accessURI"])
                     these_pleiades_links = pleiades_links[puri]
+
+                # normalize the reference links obtained in previous set to maximize potential matching
                 normalized_pleiades_links = set()
                 for this_pleiades_link in these_pleiades_links:
                     if valid_uri(this_pleiades_link):
@@ -132,6 +141,9 @@ class Generator:
                         except IndexError:
                             continue
                     normalized_pleiades_links.add(f"{domain}:{probable_id}")
+
+                # process each data item provided by the external resource for this URI
+                # to create a normalized form of the link
                 for ditem in data_items:
                     parts = urlparse(ditem.uri)
                     domain = parts.netloc
@@ -155,6 +167,7 @@ class Generator:
                             err.add_note(ditem.uri)
                             raise err
 
+                    # generate and store LPF for each matching item
                     normalized_item_uri = f"{domain}:{probable_id}"
                     ditem_lpf = ditem.to_lpf_dict()
                     if normalized_item_uri in normalized_pleiades_links:

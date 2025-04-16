@@ -87,15 +87,21 @@ class DataItem:
         for domain_links in self.links.values():
             for link in domain_links:
                 if isinstance(link, str):
+                    link = link.replace(
+                        "http://pleiades.stoa.org/", "https://pleiades.stoa.org/"
+                    )
                     if link not in link_uris:
                         link_uris.add(link)
                         dl = {"type": "closeMatch", "identifier": link}
                     else:
                         continue
                 elif isinstance(link, tuple) and len(link) == 2:
-                    if link[1] not in link_uris:
-                        link_uris.add(link[1])
-                        dl = {"type": link[0], "identifier": link[1]}
+                    uri = link[1].replace(
+                        "http://pleiades.stoa.org/", "https://pleiades.stoa.org/"
+                    )
+                    if uri not in link_uris:
+                        link_uris.add(uri)
+                        dl = {"type": link[0], "identifier": uri}
                     else:
                         continue
                 else:
