@@ -65,7 +65,12 @@ def main(**kwargs):
     main function
     """
     namespaces = [ns.strip() for ns in kwargs["namespaces"].split(",")]
-    g = Generator(namespaces)
+    ns_paths = {
+        ns: Path(environ.get(f"{ns.upper()}_PATH", "")).expanduser().resolve()
+        for ns in namespaces
+    }
+    logger.error(pformat(ns_paths, indent=4))
+    g = Generator(namespaces, ns_paths, use_cached=kwargs["usecache"])
     p, unrecip = g.generate()
     outpath = kwargs["output"].strip()
     if outpath:

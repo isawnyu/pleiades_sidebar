@@ -20,6 +20,7 @@ from pleiades_sidebar.pleiades import PleiadesDataset
 from pleiades_sidebar.temples_classical_world import ClassicalTemplesDataset
 from pleiades_sidebar.whg import WHGDataset
 from pleiades_sidebar.wikidata import WikidataDataset
+from pprint import pformat
 from urllib.parse import urlparse, parse_qs
 from validators import url as valid_uri
 
@@ -46,12 +47,20 @@ class Generator:
             self._pleiades_path = None
         for ns in namespaces:
             logger.info(f"Loading data from namespace {ns}")
+            if ns.startswith("whg_"):
+                parent_ns = "whg"
+            else:
+                parent_ns = ns
             try:
                 path = paths[ns]
             except KeyError:
-                self.datasets[ns] = CLASSES_BY_NAMESPACE[ns](use_cache=use_cached)
+                logger.error(f"ns='{ns}'")
+                logger.error(f"paths={pformat(paths, indent=4)}")
+                self.datasets[parent_ns] = CLASSES_BY_NAMESPACE[parent_ns](
+                    use_cache=use_cached
+                )
             else:
-                self.datasets[ns] = CLASSES_BY_NAMESPACE[ns](
+                self.datasets[parent_ns] = CLASSES_BY_NAMESPACE[parent_ns](
                     path=path, use_cache=use_cached
                 )
 

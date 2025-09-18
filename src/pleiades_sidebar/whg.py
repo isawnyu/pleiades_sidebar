@@ -17,7 +17,7 @@ from pleiades_sidebar.norm import norm
 from pprint import pformat
 from urllib.parse import urlparse
 
-DEFAULT_WHG_PATH = Path(environ["WHG_PATH"]).expanduser().resolve()
+DEFAULT_WHG_PATH = Path(environ.get("WHG_PATH", "")).expanduser().resolve()
 
 
 class WHGDataset(Dataset):

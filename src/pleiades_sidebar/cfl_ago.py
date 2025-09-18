@@ -15,7 +15,7 @@ from pathlib import Path
 from pleiades_sidebar.dataset import Dataset, DataItem
 from pleiades_sidebar.norm import norm
 
-DEFAULT_CFL_AGO_PATH = Path(environ["CFL_AGO_PATH"]).expanduser().resolve()
+DEFAULT_CFL_AGO_PATH = Path(environ["CFLAGO_PATH"]).expanduser().resolve()
 
 
 class CFLAGODataset(Dataset):

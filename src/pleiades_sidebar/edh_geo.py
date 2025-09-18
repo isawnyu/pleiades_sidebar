@@ -15,7 +15,7 @@ from pleiades_sidebar.dataset import Dataset, DataItem
 from pleiades_sidebar.norm import norm
 from urllib.parse import urlparse
 
-DEFAULT_EDH_GEO_PATH = Path(environ["EDH_GEO_PATH"]).expanduser().resolve()
+DEFAULT_EDH_GEO_PATH = Path(environ["EDHGEO_PATH"]).expanduser().resolve()
 
 
 class EDHGEODataset(Dataset):
