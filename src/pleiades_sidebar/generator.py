@@ -56,11 +56,11 @@ class Generator:
             except KeyError:
                 logger.error(f"ns='{ns}'")
                 logger.error(f"paths={pformat(paths, indent=4)}")
-                self.datasets[parent_ns] = CLASSES_BY_NAMESPACE[parent_ns](
+                self.datasets[ns] = CLASSES_BY_NAMESPACE[parent_ns](
                     use_cache=use_cached
                 )
             else:
-                self.datasets[parent_ns] = CLASSES_BY_NAMESPACE[parent_ns](
+                self.datasets[ns] = CLASSES_BY_NAMESPACE[parent_ns](
                     path=path, use_cache=use_cached
                 )
 
@@ -92,6 +92,7 @@ class Generator:
         all_reciprocal_count = 0  # total number of reciprocated matches
 
         for ns, dataset in self.datasets.items():
+            logger.error(f"Processing dataset for namespace '{ns}'")
             unreciprocated[ns] = list()
             matches = dataset.get_pleiades_matches()
             all_match_count += len(matches)
