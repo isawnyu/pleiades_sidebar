@@ -241,6 +241,14 @@ class Dataset:
         del f
         self._raw_data = linked_data["@graph"]
 
+    def _load_jsonlpf(self, datafile_path: Path):
+        """Load features from a JSON-LPF (Linked Places Format) file as a list of dictionaries"""
+        with open(datafile_path, "r", encoding="utf-8") as f:
+            lpf = json.load(f)
+        del f
+        self._raw_data = lpf["features"]
+        self.citation = lpf.get("citation", None)
+
     def _load_ndjson(self, datafile_path: Path):
         with jsonlines.open(str(datafile_path)) as reader:
             self._raw_data = [obj for obj in reader]
