@@ -68,6 +68,7 @@ class WHGDataItem(DataItem):
             for link in self._raw_data.get("links", [])
             if link["type"] == "closeMatch"
         ]
+
         self.links = dict()
         for link in links:
             try:
@@ -106,3 +107,16 @@ class WHGDataItem(DataItem):
             except KeyError:
                 self.links[netloc] = list()
             self.links[netloc].append(("relatedMatch", full_uri))
+
+        try:
+            source_link = self._raw_data["@id"]
+        except KeyError:
+            pass
+        else:
+            parts = urlparse(source_link)
+            domain = parts.netloc
+            try:
+                self.links[domain]
+            except KeyError:
+                self.links[domain] = list()
+            self.links[domain].append(("relatedMatch", source_link))
