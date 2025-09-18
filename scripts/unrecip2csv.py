@@ -69,7 +69,11 @@ def main(**kwargs):
         csv_filename = f"{file.stem}.csv"
         csv_filepath = path / csv_filename
         with open(csv_filepath, "w", newline="") as csvfile:
-            fieldnames = list(rows[0].keys())
+            try:
+                fieldnames = list(rows[0].keys())
+            except IndexError:
+                logger.error(f"No rows in {csv_filename}; skipping")
+                continue
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for row in rows:
