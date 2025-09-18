@@ -42,10 +42,17 @@ class PathsAtlasDataset(Dataset):
             uri: vals
             for uri, vals in self._raw_data.items()
             if uri.startswith("http://paths.uniroma1.it/atlas/places/")
+            or uri.startswith("https://atlas.paths-erc.eu/places/")
         }
         for uri, raw_item in paths_places.items():
             item = PathsAtlasDataItem(raw_item)
-            item.uri = uri
+            parts = urlparse(uri)
+            if parts.hostname == "paths.uniroma1.it":
+                item.uri = uri.replace(
+                    "http://paths.uniroma1.it", "https://atlas.paths-erc.eu"
+                )
+            else:
+                item.uri = uri
             try:
                 self._data[item.uri]
             except KeyError:
