@@ -14,6 +14,7 @@ from os import environ
 from pathlib import Path
 from pleiades_sidebar.dataset import Dataset, DataItem
 from pleiades_sidebar.norm import norm
+from pprint import pformat
 from urllib.parse import urlparse
 
 DEFAULT_WHG_PATH = Path(environ["WHG_PATH"]).expanduser().resolve()
@@ -26,12 +27,12 @@ class WHGDataset(Dataset):
         if use_cache:
             Dataset.from_cache(self, namespace=self.namespace)
         else:
-            Dataset.load(self, path, "json")
+            Dataset.load(self, path, "jsonlpf")
 
     def parse_all(self):
         logger = logging.getLogger("WHGDataset.parse_all")
-        for raw_item in self._raw_data.get("features", []):
-            item = WHGDataItem(raw_item)
+        for raw_item in self._raw_data:
+            item = WHGDataItem(raw_item, self._context)
             try:
                 self._data[item.uri]
             except KeyError:
@@ -41,7 +42,8 @@ class WHGDataset(Dataset):
 
 
 class WHGDataItem(DataItem):
-    def __init__(self, raw: dict):
+    def __init__(self, raw: dict, context: dict):
+        self._context = context
         DataItem.__init__(self, raw=raw)
         self._raw_data = raw
 
@@ -56,10 +58,11 @@ class WHGDataItem(DataItem):
         self.label = norm(props.get("title", ""))
 
         # uri
-        self.uri = norm(str(props["pid"]))
+        self.uri = (
+            self._get_base_uri("whg") + norm(str(props["pid"])) + "/detail"
+        )  # sic
 
         # links
-        ld_context = self._raw_data.get("@context", {})
         links = [
             link["identifier"].split(":")
             for link in self._raw_data.get("links", [])
@@ -67,15 +70,34 @@ class WHGDataItem(DataItem):
         ]
         self.links = dict()
         for link in links:
-            ns, link_id = link
             try:
-                base_uri = ld_context[ns]
+                ns, link_id = link
+            except ValueError as err:
+                logger.warning(f"Skipping malformed WHG link for {self.uri}: {link}")
+                continue
+            try:
+                base_uri = self._context[ns]
             except KeyError:
                 if ns == "pl":
                     base_uri = "https://pleiades.stoa.org/places/"
+                elif ns == "wp":
+                    base_uri = "https://en.wikipedia.org/wiki/"
+                elif ns == "viaf":
+                    base_uri = "https://viaf.org/viaf/"
+                elif ns == "loc":
+                    base_uri = "https://id.loc.gov/authorities/names/"
+                elif ns == "gnd":
+                    # at code time, GND URIs are returning 404s
+                    logger.error(
+                        f"GND URIs are currently not supported (404s): {link_id} for {self.uri}"
+                    )
+                elif ns == "bnf":
+                    logger.error(
+                        f"BNF URIs are currently not supported: {link_id} for {self.uri}"
+                    )
                 else:
                     raise NotImplementedError(
-                        f"Unknown namespace abbreviation '{ns}' in WHG links"
+                        f"Unknown namespace abbreviation '{ns}' in WHG links for {link_id}"
                     )
             full_uri = f"{base_uri}{link_id}"
             netloc = urlparse(full_uri).netloc

@@ -17,6 +17,7 @@ from pathlib import Path
 from platformdirs import user_cache_dir
 from pprint import pformat
 from pickle import Pickler, Unpickler
+import requests
 
 RESOURCE_URIS = {
     "cfl/ado": "",
@@ -34,6 +35,7 @@ RESOURCE_URIS = {
     "trismegistos": "https://www.trismegistos.org/place/",
     "viaf": "",
     "vici": "",
+    "whg": "https://whgazetteer.org/places/",
     "wikidata": "https://wikidata.org/entities/",
 }
 
@@ -247,7 +249,14 @@ class Dataset:
             lpf = json.load(f)
         del f
         self._raw_data = lpf["features"]
-        self.citation = lpf.get("citation", None)
+        self._citation = lpf.get("citation", None)
+        self._context_uri = lpf.get("@context", None)
+        if self._context_uri:
+            r = requests.get(self._context_uri)
+            if r.status_code == 200:
+                self._context = r.json()["@context"]
+            else:
+                self._context = None
 
     def _load_ndjson(self, datafile_path: Path):
         with jsonlines.open(str(datafile_path)) as reader:
