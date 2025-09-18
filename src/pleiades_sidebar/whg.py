@@ -14,6 +14,7 @@ from os import environ
 from pathlib import Path
 from pleiades_sidebar.dataset import Dataset, DataItem
 from pleiades_sidebar.norm import norm
+from urllib.parse import urlparse
 
 DEFAULT_WHG_PATH = Path(environ["WHG_PATH"]).expanduser().resolve()
 
@@ -36,8 +37,7 @@ class WHGDataset(Dataset):
             except KeyError:
                 self._data[item.uri] = item
             else:
-                logger.debug(f"WHG URI collision: {item.uri}. Merging ...")
-                # You may want to merge links or other properties here
+                raise NotImplementedError(f"WHG URI collision: {item.uri}. Merging ...")
 
 
 class WHGDataItem(DataItem):
@@ -56,18 +56,31 @@ class WHGDataItem(DataItem):
         self.label = norm(props.get("title", ""))
 
         # uri
-        self.uri = norm(props.get("pid", "")) or norm(props.get("id", ""))
-
-        # summary
-        self.summary = norm(props.get("description", ""))
+        self.uri = norm(str(props["pid"]))
 
         # links
-        pleiades_id = props.get("pleiades_id", "")
-        if pleiades_id:
-            self.links = {
-                "pleiades.stoa.org": [
-                    ("relatedMatch", f"https://pleiades.stoa.org/places/{pleiades_id}")
-                ]
-            }
-        else:
-            self.links = {}
+        ld_context = self._raw_data.get("@context", {})
+        links = [
+            link["identifier"].split(":")
+            for link in self._raw_data.get("links", [])
+            if link["type"] == "closeMatch"
+        ]
+        self.links = dict()
+        for link in links:
+            ns, link_id = link
+            try:
+                base_uri = ld_context[ns]
+            except KeyError:
+                if ns == "pl":
+                    base_uri = "https://pleiades.stoa.org/places/"
+                else:
+                    raise NotImplementedError(
+                        f"Unknown namespace abbreviation '{ns}' in WHG links"
+                    )
+            full_uri = f"{base_uri}{link_id}"
+            netloc = urlparse(full_uri).netloc
+            try:
+                self.links[netloc]
+            except KeyError:
+                self.links[netloc] = list()
+            self.links[netloc].append(("relatedMatch", full_uri))
