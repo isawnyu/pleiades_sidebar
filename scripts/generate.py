@@ -71,7 +71,9 @@ def main(**kwargs):
     }
     logger.error(pformat(ns_paths, indent=4))
     g = Generator(namespaces, ns_paths, use_cached=kwargs["usecache"])
-    p, unrecip = g.generate()
+    p, unrecip = g.generate(
+        infer_from_namespaces=namespaces, infer_to_netlocs=["slsgazetteer.org"]
+    )
     outpath = kwargs["output"].strip()
     if outpath:
         outpath = Path(outpath).expanduser().resolve()

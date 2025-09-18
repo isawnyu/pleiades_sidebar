@@ -184,6 +184,41 @@ class Dataset:
                 result[puri] = [self._data[uri] for uri in uris]
         return result
 
+    def infer(self, infer_to_netlocs: list) -> dict:
+        """Infer links to Pleiades based on links to other datasets with known Pleiades mappings"""
+        logger = logging.getLogger("Dataset.infer")
+        inferred = dict()
+        # find all items in this dataset that have Pleiades links
+        candidates = [
+            item
+            for item in self._data.values()
+            if "pleiades.stoa.org" in item.links.keys()
+        ]
+        for item in candidates:
+            if len(item.links["pleiades.stoa.org"]) > 1:
+                logger.warning(
+                    f"Cannot currently handle multiple Pleiades links in inference: {pformat(item, indent=4)}"
+                )
+            try:
+                puri = item.links["pleiades.stoa.org"][0][1]
+            except IndexError:
+                continue
+            for netloc in infer_to_netlocs:
+                logger.debug(f"Checking netloc {netloc}")
+                try:
+                    source_links = {link[1] for link in item.links[netloc]}
+                except KeyError:
+                    continue
+                logger.debug(
+                    f"source_links for netloc {netloc}: {pformat(source_links, indent=4)}"
+                )
+                try:
+                    inferred[puri]
+                except KeyError:
+                    inferred[puri] = list()
+                inferred[puri].extend([{"uri": link} for link in source_links])
+        return inferred
+
     def load(self, datafile_path: Path, load_method: str):
         """Load the target dataset"""
         cmd = f"_load_{load_method}"

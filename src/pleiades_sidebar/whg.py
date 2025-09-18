@@ -21,8 +21,8 @@ DEFAULT_WHG_PATH = Path(environ.get("WHG_PATH", "")).expanduser().resolve()
 
 
 class WHGDataset(Dataset):
-    def __init__(self, path: Path = DEFAULT_WHG_PATH, use_cache=False):
-        Dataset.__init__(self)
+    def __init__(self, path: Path = DEFAULT_WHG_PATH, use_cache=False, **kwargs):
+        Dataset.__init__(self, **kwargs)
         self.namespace = "whg"
         if use_cache:
             Dataset.from_cache(self, namespace=self.namespace)
@@ -74,8 +74,21 @@ class WHGDataItem(DataItem):
             try:
                 ns, link_id = link
             except ValueError as err:
-                logger.warning(f"Skipping malformed WHG link for {self.uri}: {link}")
-                continue
+                if (
+                    len(link) == 3
+                    and link[0] == "pl"
+                    and link[1] in ["http", "https"]
+                    and link[2].startswith("//pleiades.stoa.org/places/")
+                ):
+                    # handle malformed Pleiades links like
+                    # ['pl', 'http', '//pleiades.stoa.org/places/700424']
+                    ns = "pl"
+                    link_id = [part for part in link[2].split("/") if part][-1]
+                else:
+                    logger.warning(
+                        f"Skipping malformed WHG link for {self.uri}: {link}"
+                    )
+                    continue
             try:
                 base_uri = self._context[ns]
             except KeyError:

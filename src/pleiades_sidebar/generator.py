@@ -64,7 +64,7 @@ class Generator:
                     path=path, use_cache=use_cached
                 )
 
-    def generate(self):
+    def generate(self, infer_from_namespaces: list = [], infer_to_netlocs: list = []):
         logger = logging.getLogger("Generator.generate")
         logger.debug(f"pleiades_path={self._pleiades_path}")
         if self._pleiades_path is not None:
@@ -91,10 +91,22 @@ class Generator:
         all_match_count = 0  # total number of matches
         all_reciprocal_count = 0  # total number of reciprocated matches
 
+        inferences = dict()
+
         for ns, dataset in self.datasets.items():
-            logger.error(f"Processing dataset for namespace '{ns}'")
+            logger.debug(f"Processing dataset for namespace '{ns}'")
             unreciprocated[ns] = list()
             matches = dataset.get_pleiades_matches()
+            if ns in infer_from_namespaces:
+                logger.debug(f"Inferring links for namespace '{ns}'")
+                these_inferences = dataset.infer(infer_to_netlocs)
+                for puri, items in these_inferences.items():
+                    try:
+                        inferences[puri]
+                    except KeyError:
+                        inferences[puri] = list()
+                    inferences[puri].extend(items)
+
             all_match_count += len(matches)
 
             logger.info(
@@ -189,6 +201,22 @@ class Generator:
                         ditem_lpf["properties"]["reciprocal"] = False
                         unreciprocated[ns].append(ditem_lpf)
                     sidebar[puri].append(ditem_lpf)
+
+        # logger.error(pformat(inferences, indent=4))
+        for puri, items in inferences.items():  # add inferred links to sidebar
+            try:
+                sidebar[puri]
+            except KeyError:
+                sidebar[puri] = list()
+            for item in items:
+                sidebar[puri].append(
+                    {
+                        "@id": item["uri"],
+                        "type": ["Feature"],
+                        "properties": {},
+                        "links": [],
+                    }
+                )
 
         # sort data to facilitate run-to-run diff
         for puri in sidebar.keys():
