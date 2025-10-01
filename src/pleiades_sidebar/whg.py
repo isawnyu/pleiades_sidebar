@@ -92,10 +92,12 @@ class WHGDataItem(DataItem):
                     logger.error(
                         f"GND URIs are currently not supported (404s): {link_id} for {self.uri}"
                     )
+                    continue
                 elif ns == "bnf":
                     logger.error(
                         f"BNF URIs are currently not supported: {link_id} for {self.uri}"
                     )
+                    continue
                 else:
                     raise NotImplementedError(
                         f"Unknown namespace abbreviation '{ns}' in WHG links for {link_id}"
