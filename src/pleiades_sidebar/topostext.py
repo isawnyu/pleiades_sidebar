@@ -53,25 +53,18 @@ class ToposTextDataItem(DataItem):
         logger = logging.getLogger("ToposTextDataItem._parse")
 
         # label
-        self.label = norm(self._raw_data["name"])
+        self.label = norm(self._raw_data["TITLE"])
 
         # uri
-        id = norm(self._raw_data["id"])
+        id = norm(self._raw_data["TTID"])
         self.uri = f"https://topostext.org/place/{id}"
 
         # summary
-        location = norm(self._raw_data["location"])
-        modern_place = norm(self._raw_data["modernplace"])
-        if location and modern_place:
-            self.summary = f"{location}, {modern_place}"
-        elif location:
-            self.summary = f"{location}"
-        elif modern_place:
-            self.summary = modern_place
+        summary = norm(self._raw_data["SHORTDESC"])
         self.summary = ""
 
         # links
-        pid = norm(self._raw_data["pleiades"])
+        pid = norm(self._raw_data["PLEIADES"])
         if pid:
             self.links = {
                 "pleiades.stoa.org": [
