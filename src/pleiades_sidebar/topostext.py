@@ -64,10 +64,14 @@ class ToposTextDataItem(DataItem):
         self.summary = summary
 
         # links
+        self.links = dict()
         pid = norm(self._raw_data["PLEIADES"])
         if pid:
-            self.links = {
-                "pleiades.stoa.org": [
-                    ("relatedMatch", f"https://pleiades.stoa.org/places/{pid}")
-                ]
-            }
+            self.links["pleiades.stoa.org"] = [
+                ("closeMatch", f"https://pleiades.stoa.org/places/{pid}")
+            ]
+        wid = norm(self._raw_data["WIKIDATA"])
+        if wid:
+            self.links["wikidata.org"] = [
+                ("closeMatch", f"https://www.wikidata.org/wiki/{wid}")
+            ]
