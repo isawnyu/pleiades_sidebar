@@ -61,7 +61,7 @@ class ToposTextDataItem(DataItem):
 
         # summary
         summary = norm(self._raw_data["SHORTDESC"])
-        self.summary = ""
+        self.summary = summary
 
         # links
         pid = norm(self._raw_data["PLEIADES"])
