@@ -18,6 +18,7 @@ from pleiades_sidebar.nomisma import NomismaDataset
 from pleiades_sidebar.paths_atlas import PathsAtlasDataset
 from pleiades_sidebar.pleiades import PleiadesDataset
 from pleiades_sidebar.temples_classical_world import ClassicalTemplesDataset
+from pleiades_sidebar.topostext import ToposTextDataset
 from pleiades_sidebar.whg import WHGDataset
 from pleiades_sidebar.wikidata import WikidataDataset
 from pprint import pformat
@@ -32,6 +33,7 @@ CLASSES_BY_NAMESPACE = {
     "manto": MANTODataset,
     "nomisma": NomismaDataset,
     "paths_atlas": PathsAtlasDataset,
+    "topostext": ToposTextDataset,
     "whg": WHGDataset,
     "wikidata": WikidataDataset,
 }
