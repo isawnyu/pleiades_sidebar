@@ -40,7 +40,7 @@ class PathsAtlasDataset(Dataset):
 
         paths_places = {
             uri: vals
-            for uri, vals in self._raw_data.items()
+            for uri, vals in self._raw_data.items()  # type: ignore
             if uri.startswith("http://paths.uniroma1.it/atlas/places/")
             or uri.startswith("https://atlas.paths-erc.eu/places/")
         }
@@ -49,7 +49,7 @@ class PathsAtlasDataset(Dataset):
             parts = urlparse(uri)
             if parts.hostname == "paths.uniroma1.it":
                 item.uri = uri.replace(
-                    "http://paths.uniroma1.it", "https://atlas.paths-erc.eu"
+                    "http://paths.uniroma1.it/atlas", "https://atlas.paths-erc.eu"
                 )
             else:
                 item.uri = uri
