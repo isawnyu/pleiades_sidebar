@@ -36,8 +36,6 @@ class PathsAtlasDataset(Dataset):
     def parse_all(self):
         logger = logging.getLogger("PathsAtlasDataset.parse_all")
 
-        print
-
         paths_places = {
             uri: vals
             for uri, vals in self._raw_data.items()  # type: ignore
