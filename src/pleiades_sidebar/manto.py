@@ -36,9 +36,16 @@ class MANTODataset(Dataset):
                 self._data[item.uri] = item
             else:
                 logger.debug(f"MANTO URI collision: {item.uri}. Merging ...")
-                self._data[item.uri].links["pleiades.stoa.org"].extend(
-                    item.links["pleiades.stoa.org"]
-                )
+                for netloc, link_list in item.links.items():
+                    existing_link_uris = {
+                        link_uri
+                        for link_type, link_uri in self._data[item.uri].links[netloc]
+                    }
+                    for link_type, link_uri in link_list:
+                        if link_uri not in existing_link_uris:
+                            self._data[item.uri].links[netloc].append(
+                                (link_type, link_uri)
+                            )
 
 
 class MANTODataItem(DataItem):
@@ -54,7 +61,8 @@ class MANTODataItem(DataItem):
         self.label = norm(self._raw_data["Name"])
 
         # uri
-        self.uri = "https://resource.manto.unh.edu/" + norm(self._raw_data["Object ID"])
+        # self.uri = "https://resource.manto.unh.edu/" + norm(self._raw_data["Object ID"])
+        self.uri = norm(self._raw_data["Link to MANTO public interface"])
 
         # summary
         self.summary = norm(self._raw_data["Information"])
@@ -62,13 +70,24 @@ class MANTODataItem(DataItem):
             self.summary = self.summary[0].upper() + self.summary[1:]
 
         # links
-        pid = self._raw_data["Pleiades"].strip()
-        if pid:
-            self.links = {
-                "pleiades.stoa.org": [
+        domains = {
+            "PALP": "palp.art",
+            "Pleiades": "pleiades.stoa.org",
+            "Wikidata": "wikidata.org",
+        }
+        bases = {
+            "PALP": "https://palp.art/browse/",
+            "Pleiades": "https://pleiades.stoa.org/places/",
+            "Wikidata": "https://www.wikidata.org/wiki/",
+        }
+        self.links = {k: [] for k in domains.values()}
+        for fieldname, netloc in domains.items():
+            v = norm(self._raw_data[fieldname])
+            if v:
+                self.links[netloc].append(
                     (
                         "relatedMatch",
-                        "https://pleiades.stoa.org/places/" + pid,
+                        bases[fieldname] + v,
                     )
-                ]
-            }
+                )
+        logger.debug(f"Parsed MANTO item: {self.uri}")
