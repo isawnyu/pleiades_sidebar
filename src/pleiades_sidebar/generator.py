@@ -17,6 +17,7 @@ from pleiades_sidebar.manto import MANTODataset
 from pleiades_sidebar.nomisma import NomismaDataset
 from pleiades_sidebar.paths_atlas import PathsAtlasDataset
 from pleiades_sidebar.pleiades import PleiadesDataset
+from pleiades_sidebar.p_lod import PLODDataset
 from pleiades_sidebar.temples_classical_world import ClassicalTemplesDataset
 from pleiades_sidebar.topostext import ToposTextDataset
 from pleiades_sidebar.whg import WHGDataset
@@ -33,6 +34,7 @@ CLASSES_BY_NAMESPACE = {
     "manto": MANTODataset,
     "nomisma": NomismaDataset,
     "paths_atlas": PathsAtlasDataset,
+    "p_lod": PLODDataset,
     "topostext": ToposTextDataset,
     "whg": WHGDataset,
     "wikidata": WikidataDataset,
@@ -42,6 +44,9 @@ CLASSES_BY_NAMESPACE = {
 class Generator:
     def __init__(self, namespaces: list, paths: dict = {}, use_cached: bool = False):
         logger = logging.getLogger("Generator.__init__")
+        logger.debug(
+            f"Initializing Generator with namespaces={namespaces}, paths={pformat(paths)}, and use_cached={use_cached}"
+        )
         self.datasets = {}
         try:
             self._pleiades_path = paths["pleiades"]

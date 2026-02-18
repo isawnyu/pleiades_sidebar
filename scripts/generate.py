@@ -64,7 +64,11 @@ def main(**kwargs):
     """
     main function
     """
+    silence_loggers = ["Dataset._pindex", "normalize_space", "NomismaDataItem._parse"]
+    for logger_name in silence_loggers:
+        logging.getLogger(logger_name).setLevel(logging.WARNING)
     namespaces = [ns.strip() for ns in kwargs["namespaces"].split(",")]
+    logger.debug(f"Parsed namespaces: {namespaces}")
     ns_paths = {
         ns: Path(environ.get(f"{ns.upper()}_PATH", "")).expanduser().resolve()
         for ns in namespaces
