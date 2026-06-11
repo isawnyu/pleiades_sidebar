@@ -6,9 +6,11 @@
 #
 
 """
-Python 3 package template (changeme)
+Define a class for managing data from vici.org
 """
 
-import logging
+from os import environ
+from pathlib import Path
+from pleiades_sidebar.dataset import Dataset, DataItem
+from pleiades_sidebar.norm import norm
 
-logger = logging.getLogger(__name__)
