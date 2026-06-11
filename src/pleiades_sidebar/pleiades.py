@@ -31,7 +31,11 @@ class PleiadesDataset:
         try:
             return self._places[puri]
         except KeyError:
-            pid = [s for s in puri.split("/") if s.strip()][-1]
+            try:
+                pid = [s for s in puri.split("/") if s.strip()][-1]
+            except IndexError:
+                logger.error(f"Invalid Pleiades URI: '{puri}'")
+                return dict()
             parts = list(pid)
             parts = parts[0 : len(parts) - 2]
             parts.append(pid)

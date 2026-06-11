@@ -58,6 +58,7 @@ class DataItem:
 
     def __init__(self, raw: dict):
         self.label = None
+        self.labels_by_language = dict()
         self.uri = None
         self.summary = None
         self.links = dict()

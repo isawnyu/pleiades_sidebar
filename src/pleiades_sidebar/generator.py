@@ -20,6 +20,7 @@ from pleiades_sidebar.pleiades import PleiadesDataset
 from pleiades_sidebar.p_lod import PLODDataset
 from pleiades_sidebar.temples_classical_world import ClassicalTemplesDataset
 from pleiades_sidebar.topostext import ToposTextDataset
+from pleiades_sidebar.vici import VICIDataset
 from pleiades_sidebar.whg import WHGDataset
 from pleiades_sidebar.wikidata import WikidataDataset
 from pprint import pformat
@@ -36,6 +37,7 @@ CLASSES_BY_NAMESPACE = {
     "paths_atlas": PathsAtlasDataset,
     "p_lod": PLODDataset,
     "topostext": ToposTextDataset,
+    "vici": VICIDataset,
     "whg": WHGDataset,
     "wikidata": WikidataDataset,
 }
@@ -99,7 +101,7 @@ class Generator:
         all_reciprocal_count = 0  # total number of reciprocated matches
 
         for ns, dataset in self.datasets.items():
-            logger.error(f"Processing dataset for namespace '{ns}'")
+            logger.info(f"Processing dataset for namespace '{ns}'")
             unreciprocated[ns] = list()
             matches = dataset.get_pleiades_matches()
             all_match_count += len(matches)
@@ -109,6 +111,14 @@ class Generator:
             )
             for puri, data_items in matches.items():
                 # ensure we have a list in the sidebar dictionary for the pleiades uri we are processing
+                logger.debug(
+                    f"Processing Pleiades URI '{puri}' with {len(data_items)} matching items from {ns} dataset."
+                )
+                if not valid_uri(puri):
+                    logger.error(
+                        f"Invalid Pleiades URI: '{puri}' referenced in {ns}. Ignored.\n{pformat(data_items)}"
+                    )
+                    continue
                 puri = puri.replace("http://", "https://")
                 try:
                     sidebar[puri]
@@ -125,7 +135,7 @@ class Generator:
                         pleiades_place = pleiades.get(puri)
                     except FileNotFoundError:
                         logger.error(
-                            f"Non-existent Pleiades place {puri} referenced in {ns}. Ignored."
+                            f"Non-existent Pleiades place {puri} referenced in {ns}. Ignored.\n{pformat(data_items)}"
                         )
                         continue
                     for r in pleiades_place["references"]:
