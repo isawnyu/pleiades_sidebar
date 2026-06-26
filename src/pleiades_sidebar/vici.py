@@ -12,7 +12,6 @@ Define a class for managing data from vici.org
 import logging
 from os import environ
 from pathlib import Path
-from venv import logger
 from pleiades_sidebar.dataset import Dataset, DataItem
 from pleiades_sidebar.norm import norm
 from pprint import pformat

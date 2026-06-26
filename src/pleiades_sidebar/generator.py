@@ -14,6 +14,7 @@ from pleiades_sidebar.cfl_ago import CFLAGODataset
 from pleiades_sidebar.edh_geo import EDHGEODataset
 from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.manto import MANTODataset
+from pleiades_sidebar.mantoapi import MANTOAPIDataset
 from pleiades_sidebar.nomisma import NomismaDataset
 from pleiades_sidebar.paths_atlas import PathsAtlasDataset
 from pleiades_sidebar.pleiades import PleiadesDataset
@@ -33,6 +34,7 @@ CLASSES_BY_NAMESPACE = {
     "edhgeo": EDHGEODataset,
     "itinere": ItinerEDataset,
     "manto": MANTODataset,
+    "mantoapi": MANTOAPIDataset,
     "nomisma": NomismaDataset,
     "paths_atlas": PathsAtlasDataset,
     "p_lod": PLODDataset,
