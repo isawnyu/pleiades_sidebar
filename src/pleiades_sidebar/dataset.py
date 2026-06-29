@@ -13,6 +13,8 @@ from encoded_csv import get_csv
 import json
 import jsonlines
 import logging
+import lxml
+import lxml.etree as ET
 from pathlib import Path
 from platformdirs import user_cache_dir
 from pprint import pformat
@@ -56,7 +58,7 @@ LPF_FEATURE_TEMPLATE = {
 class DataItem:
     """An individual data item in a dataset"""
 
-    def __init__(self, raw: dict):
+    def __init__(self, raw: dict | ET.Element):
         self.label = None
         self.labels_by_language = dict()
         self.uri = None
@@ -213,10 +215,14 @@ class Dataset:
                 self._pleiades_index[puri].add(ditem.uri)
 
     def to_cache(self):
+        logger = logging.getLogger("Dataset.to_cache")
         path = Path(user_cache_dir("pleiades_sidebar", ensure_exists=True))
         with open(path / f"{self.namespace}.pickle", "wb") as f:
             pickler = Pickler(f)
-            pickler.dump(self._data)
+            try:
+                pickler.dump(self._data)
+            except TypeError as e:
+                logger.error(f"Error pickling dataset {self.namespace}: {e}")
         del f
 
     def to_lpf_dict(self):
@@ -271,6 +277,25 @@ class Dataset:
             f"Loaded {len(data['content'])} rows of data with fieldnames: {pformat(data['fieldnames'], indent=4)}"
         )
         self._raw_data = data["content"]
+
+    def _load_xml_tree(self, datafile_path: Path) -> ET.ElementTree:
+        """Load features from an XML file as a list of dictionaries"""
+        tree = ET.parse(str(datafile_path))
+        return tree
+
+    def _load_xml_wfs(self, datafile_path: Path):
+        """Load features from a WFS XML file; returns the featureMember"""
+        tree = self._load_xml_tree(datafile_path)
+        root = tree.getroot()
+        nsmap = root.nsmap
+        feature_members = root.findall(
+            ".//{http://www.opengis.net/wfs}FeatureCollection/{http://www.opengis.net/gml}featureMember",
+            namespaces=nsmap,
+        )
+        if len(feature_members) == 1:
+            self._raw_data = feature_members[0]
+        else:
+            raise ValueError(f"Expected 1 featureMember, found {len(feature_members)}")
 
     def __len__(self):
         return len(self._data)

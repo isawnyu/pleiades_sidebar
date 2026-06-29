@@ -10,7 +10,7 @@ Define a class for generating sidebar data from multiple sources
 """
 import logging
 from os import environ
-from pleiades_sidebar.cfl_ago import CFLAGODataset
+from pleiades_sidebar.cflagoapi import CFLAGOAPIDataset
 from pleiades_sidebar.edh_geo import EDHGEODataset
 from pleiades_sidebar.itinere import ItinerEDataset
 from pleiades_sidebar.manto import MANTODataset
@@ -29,7 +29,7 @@ from urllib.parse import urlparse, parse_qs
 from validators import url as valid_uri
 
 CLASSES_BY_NAMESPACE = {
-    "cflago": CFLAGODataset,
+    "cflagoapi": CFLAGOAPIDataset,
     "classical_temples": ClassicalTemplesDataset,
     "edhgeo": EDHGEODataset,
     "itinere": ItinerEDataset,
