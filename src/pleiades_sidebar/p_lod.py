@@ -82,8 +82,12 @@ class PLODDataItem(DataItem):
         self.links = {}
         pid = norm(self._raw_data["pleiades-url"])
         if pid:
+            if pid.startswith("https://pleiades.stoa.org/places/"):
+                puri = pid
+            else:
+                puri = f"https://pleiades.stoa.org/places/{pid}"
             self.links["pleiades.stoa.org"] = [
-                ("relatedMatch", f"https://pleiades.stoa.org/places/{pid}")
+                ("relatedMatch", puri)
             ]
         pinp_url = norm(self._raw_data["p-in-p-url"])
         if pinp_url:
