@@ -124,6 +124,11 @@ class VICIDataItem(DataItem):
             parts = urlsplit(raw_link)
             if parts.netloc == "pleiades.stoa.org" and parts.scheme == "http":
                 raw_link = raw_link.replace("http://", "https://")
+            elif parts.netloc == "wikidata.org":
+                # http://www.wikidata.org/entity/Q{id} is the persistent URI of the item identified as Q{id}
+                # so wiki change from www.wikidata.org to wikidata.org is not canonical even though it does
+                # work on redirect
+                raw_link = raw_link.replace("wikidata.org", "www.wikidata.org")
             self.links[parts.netloc] = [
                 raw_link,
             ]
